@@ -10,9 +10,10 @@ func route() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/", homeHandler)
-	router.HandleFunc("/getExpenses", getExpenses)
-	router.HandleFunc("/getExpenses/{id}", getExpense)
-	router.HandleFunc("/addExpense", addExpense).Methods("POST")
+	router.HandleFunc("/expenses", getExpenses)
+	router.HandleFunc("/expenses/{id}", getExpense)
+	router.HandleFunc("/expenses", addExpense).Methods("POST")
+	router.HandleFunc("/expenses/{id}", updateExpenses).Methods("PUT")
 
 	http.ListenAndServe(":8080", router)
 }
