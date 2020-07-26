@@ -13,13 +13,6 @@ import (
 )
 
 func main() {
-	// mock data
-	Expenses = []Expense{
-		Expense{Title: "Barcelona trip", Amount: 20000, ID: 1},
-		Expense{Title: "Groceries", Amount: 100, ID: 2},
-		Expense{Title: "Bike", Amount: 2202020, ID: 3},
-	}
-
 	route()
 }
 
