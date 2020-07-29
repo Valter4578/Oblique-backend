@@ -1,4 +1,4 @@
-package main
+package model
 
 // Expense structure
 type Expense struct {

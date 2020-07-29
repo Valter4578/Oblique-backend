@@ -4,14 +4,16 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	
+	"expense"
 )
 
 func route() {
 	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/", homeHandler)
-	router.HandleFunc("/expenses", getExpenses)
-	router.HandleFunc("/expenses/{id}", getExpense)
+	router.HandleFunc("/", expense.homeHandler)
+	router.HandleFunc("/expenses", expense.getExpenses)
+	router.HandleFunc("/expenses/{id}", expense.getExpense)
 	router.HandleFunc("/expenses", addExpense).Methods("POST")
 	router.HandleFunc("/expenses/{id}", updateExpenses).Methods("PUT")
 
