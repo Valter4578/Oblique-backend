@@ -14,6 +14,7 @@ import (
 	// "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// GetExpenses is get method that returns all expenses
 func GetExpenses(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetExpenses")
 
@@ -21,6 +22,7 @@ func GetExpenses(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(model.Expenses)
 }
 
+// GetExpense is get method that returns expense by id
 func GetExpense(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetExpense")
 
@@ -41,6 +43,7 @@ func GetExpense(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// AddExpense is post method for add new user's expense
 func AddExpense(w http.ResponseWriter, r *http.Request) {
 	log.Println("addExpense")
 	log.Println(r.URL.Query())
@@ -50,13 +53,6 @@ func AddExpense(w http.ResponseWriter, r *http.Request) {
 	model.LastExpenseID++
 
 	var expense model.Expense
-	// decoder := json.NewDecoder(r.Body)
-	// err := decoder.Decode(&expense)
-	// if err != nil {
-	// 	log.Println(err)
-	// 	r.Body.Close()
-	// 	return
-	// }
 
 	expense.Title = params.Get("title")
 	expense.Amount, _ = strconv.Atoi(params.Get("amount"))
@@ -70,6 +66,7 @@ func AddExpense(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(model.Expenses)
 }
 
+// UpdateExpenses is PUT method that updates expense by id
 func UpdateExpenses(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -99,6 +96,7 @@ func UpdateExpenses(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(model.Expenses)
 }
 
+// DeleteExpense is DELETE method that deletes expense by id
 func DeleteExpense(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
