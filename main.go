@@ -1,8 +1,8 @@
 package main
 
-// "go.mongodbss.org/mongo-driver/bson"
-// "go.mongodb.org/mongo-driver/bson/primitive"
+import "log"
 
 func main() {
+	log.Println("Server started")
 	route()
 }

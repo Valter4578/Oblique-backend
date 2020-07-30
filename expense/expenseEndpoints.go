@@ -2,10 +2,10 @@ package expense
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -15,11 +15,15 @@ import (
 )
 
 func GetExpenses(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetExpenses")
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(model.Expenses)
 }
 
 func GetExpense(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetExpense")
+
 	w.Header().Set("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
@@ -38,18 +42,26 @@ func GetExpense(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddExpense(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Body)
+	log.Println("addExpense")
+	log.Println(r.URL.Query())
+
+	params := r.URL.Query()
 
 	model.LastExpenseID++
 
 	var expense model.Expense
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&expense)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// decoder := json.NewDecoder(r.Body)
+	// err := decoder.Decode(&expense)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	r.Body.Close()
+	// 	return
+	// }
 
+	expense.Title = params.Get("title")
+	expense.Amount, _ = strconv.Atoi(params.Get("amount"))
 	expense.ID = model.Expenses[len(model.Expenses)-1].ID + 1
+	expense.Time = time.Now()
 
 	model.Expenses = append(model.Expenses, expense)
 
