@@ -64,13 +64,6 @@ func AddExpense(w http.ResponseWriter, r *http.Request) {
 
 	expense.Time = time.Now()
 
-	// // model.Expenses = append(model.Expenses, expense)
-	// for _, category := range model.Categories {
-	// 	if strings.ToLower(category.Title) == strings.ToLower(expense.Title) {
-	// 		category.Expenses = append(category.Expenses, expense)
-	// 	}
-	// }
-
 	category, index := category.FindCategory(expense.Title)
 	category.Expenses = append(category.Expenses, expense)
 
@@ -136,14 +129,4 @@ func DeleteExpense(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(model.Categories)
-}
-
-func GetExpenseByCategory(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetExpenseByCategory")
-
-	w.Header().Set("Content-Type", "application/json")
-
-	// vars := mux.Vars(r)
-	// title := vars["title"]
-
 }

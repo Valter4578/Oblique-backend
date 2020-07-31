@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"mellow/category"
 	"mellow/expense"
 )
 
@@ -15,12 +16,14 @@ func route() {
 
 	// expenses
 	router.HandleFunc("/expenses", expense.GetExpenses)
-	router.HandleFunc("/expenses/{id}", expense.GetExpense)
-	router.HandleFunc("/expensesByCategory/{title}", expense.GetExpenseByCategory)
-	router.HandleFunc("/addExpense", expense.AddExpense).Methods("POST")
+	router.HandleFunc("/expense/{id}", expense.GetExpense)
+	router.HandleFunc("/expense", expense.AddExpense).Methods("POST")
 	router.HandleFunc("/expenses/{id}", expense.UpdateExpenses).Methods("PUT")
 
-	log.Fatal(http.ListenAndServe(":8080", router))
-	log.Println("Start listening at port :8080")
+	// category
+	router.HandleFunc("/categories", category.GetAllCategories)
+	router.HandleFunc("/category/{title}", category.GetCategory)
+	router.HandleFunc("/category", category.AddCategory).Methods("POST")
 
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
