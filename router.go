@@ -13,8 +13,10 @@ func route() {
 	log.Println("Starting routing")
 	router := mux.NewRouter().StrictSlash(true)
 
+	// expenses
 	router.HandleFunc("/expenses", expense.GetExpenses)
 	router.HandleFunc("/expenses/{id}", expense.GetExpense)
+	router.HandleFunc("/expensesByCategory/{title}", expense.GetExpenseByCategory)
 	router.HandleFunc("/addExpense", expense.AddExpense).Methods("POST")
 	router.HandleFunc("/expenses/{id}", expense.UpdateExpenses).Methods("PUT")
 
