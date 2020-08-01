@@ -47,3 +47,10 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(model.Categories)
 }
+
+func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetMostUsedCategories")
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(MostUsedCategories())
+}
