@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 
@@ -26,5 +28,15 @@ func route() {
 	router.HandleFunc("/category", category.AddCategory).Methods("POST")
 	router.HandleFunc("/mostUsedCategories", category.GetMostUsedCategories)
 
-	log.Fatal(http.ListenAndServe("$PORT", router))
+	log.Fatal(http.ListenAndServe(getPort(), router))
+}
+
+func getPort() string {
+	var port = os.Getenv("PORT")
+	// Set a default port if there is nothing in the environment
+	if port == "" {
+		port = "4747"
+		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+	}
+	return ":" + port
 }
