@@ -26,5 +26,5 @@ func route() {
 	router.HandleFunc("/category", category.AddCategory).Methods("POST")
 	router.HandleFunc("/mostUsedCategories", category.GetMostUsedCategories)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe("$PORT", router))
 }
