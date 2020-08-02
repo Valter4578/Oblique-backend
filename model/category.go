@@ -2,19 +2,19 @@ package model
 
 // Category ...
 type Category struct {
-	Title     string `json:"title,omitempty" bson:"title,omitempty"`
-	ImageName string `json:"imageName,omitempty" bson:"imageName,omitempty"`
-	Color     string `json:"color,omitempty" bson:"color,omitempty"`
-	Expenses  []Expense
+	Title      string `json:"title,omitempty" bson:"title,omitempty"`
+	ImageName  string `json:"imageName,omitempty" bson:"imageName,omitempty"`
+	Color      string `json:"color,omitempty" bson:"color,omitempty"`
+	Operations []Operation
 }
 
 var Categories []Category = []Category{
-	Category{Title: "Travel", ImageName: "travel", Color: "#fff", Expenses: []Expense{
-		Expense{Title: "Barcelona trip", Amount: 20000, ID: 1},
-		Expense{Title: "Paris trip", Amount: 351521, ID: 2},
-	}}, Category{Title: "Groceries", ImageName: "groceries", Color: "#652425", Expenses: []Expense{
-		Expense{Title: "Vegetables", Amount: 20, ID: 3},
-		Expense{Title: "Fruits", Amount: 10, ID: 4},
-		Expense{Title: "Meat", Amount: 40, ID: 5},
+	Category{Title: "Travel", ImageName: "travel", Color: "#fff", Operations: []Operation{
+		Operation{Title: "Barcelona trip", Amount: 20000, Type: "expense", ID: 1},
+		Operation{Title: "Paris trip", Amount: 351521, Type: "expense", ID: 2},
+	}}, Category{Title: "Groceries", ImageName: "groceries", Color: "#652425", Operations: []Operation{
+		Operation{Title: "Vegetables", Amount: 20, Type: "expense", ID: 3},
+		Operation{Title: "Fruits", Amount: 10, Type: "expense", ID: 4},
+		Operation{Title: "Meat", Amount: 40, Type: "expense", ID: 5},
 	}},
 }

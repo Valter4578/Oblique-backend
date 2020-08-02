@@ -16,11 +16,11 @@ func route() {
 	log.Println("Starting routing")
 	router := mux.NewRouter().StrictSlash(true)
 
-	// expenses
-	router.HandleFunc("/expenses", expense.GetExpenses)
-	router.HandleFunc("/expense/{id}", expense.GetExpense)
-	router.HandleFunc("/expense", expense.AddExpense).Methods("POST")
-	router.HandleFunc("/expenses/{id}", expense.UpdateExpenses).Methods("PUT")
+	// operations
+	router.HandleFunc("/operations", expense.GetExpenses)
+	router.HandleFunc("/operation/{id}", expense.GetExpense)
+	router.HandleFunc("/operation", expense.AddExpense).Methods("POST")
+	router.HandleFunc("/operation/{id}", expense.UpdateExpenses).Methods("PUT")
 
 	// category
 	router.HandleFunc("/categories", category.GetAllCategories)

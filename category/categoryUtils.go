@@ -26,7 +26,7 @@ func MostUsedCategories() []model.Category {
 	mostUsedCategories := model.Categories
 
 	sort.SliceStable(mostUsedCategories, func(i, j int) bool {
-		return len(mostUsedCategories[i].Expenses) > len(mostUsedCategories[j].Expenses)
+		return len(mostUsedCategories[i].Operations) > len(mostUsedCategories[j].Operations)
 	})
 
 	return mostUsedCategories
