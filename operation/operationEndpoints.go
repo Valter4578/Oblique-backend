@@ -1,4 +1,4 @@
-package expense
+package operation
 
 import (
 	"encoding/json"
@@ -11,8 +11,6 @@ import (
 
 	"mellow/category"
 	"mellow/model"
-	// "go.mongodb.org/mongo-driver/bson"
-	// "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // GetOperations is get method that returns all expenses
@@ -21,7 +19,16 @@ func GetOperations(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	json.NewEncoder(w).Encode(allOperations())
+	params := r.URL.Query()
+
+	opType := params.Get("type")
+	if opType != "" {
+		operations := operationsType(opType)
+		json.NewEncoder(w).Encode(operations)
+	} else {
+		json.NewEncoder(w).Encode(allOperations())
+	}
+
 }
 
 // GetOperation is get method that returns expense by id

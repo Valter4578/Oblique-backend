@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"mellow/category"
-	"mellow/expense"
+	"mellow/operation"
 )
 
 func route() {
@@ -17,10 +17,10 @@ func route() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	// operations
-	router.HandleFunc("/operations", expense.GetExpenses)
-	router.HandleFunc("/operation/{id}", expense.GetExpense)
-	router.HandleFunc("/operation", expense.AddExpense).Methods("POST")
-	router.HandleFunc("/operation/{id}", expense.UpdateExpenses).Methods("PUT")
+	router.HandleFunc("/operations", operation.GetOperations)
+	router.HandleFunc("/operation/{id}", operation.GetOperation)
+	router.HandleFunc("/operation", operation.AddOperation).Methods("POST")
+	router.HandleFunc("/operation/{id}", operation.UpdateOperation).Methods("PUT")
 
 	// category
 	router.HandleFunc("/categories", category.GetAllCategories)
@@ -35,7 +35,7 @@ func getPort() string {
 	var port = os.Getenv("PORT")
 	// Set a default port if there is nothing in the environment
 	if port == "" {
-		port = "4747"
+		port = "8080"
 		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
 	}
 	return ":" + port
