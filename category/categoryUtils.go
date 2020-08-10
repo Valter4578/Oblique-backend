@@ -1,7 +1,7 @@
 package category
 
 import (
-	"mellow/model"
+	"oblique/model"
 	"sort"
 	"strings"
 )

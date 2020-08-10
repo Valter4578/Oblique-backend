@@ -8,8 +8,8 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"mellow/category"
-	"mellow/operation"
+	"oblique/category"
+	"oblique/operation"
 )
 
 func route() {

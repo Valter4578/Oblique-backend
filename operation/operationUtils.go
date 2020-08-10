@@ -1,7 +1,7 @@
 package operation
 
 import (
-	"mellow/model"
+	"oblique/model"
 )
 
 func allOperations() []model.Operation {

@@ -9,8 +9,8 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"mellow/category"
-	"mellow/model"
+	"oblique/category"
+	"oblique/model"
 )
 
 // GetOperations is get method that returns all expenses

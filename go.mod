@@ -1,4 +1,4 @@
-module mellow
+module oblique
 
 go 1.13
 

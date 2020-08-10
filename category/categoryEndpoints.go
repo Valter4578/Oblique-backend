@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"mellow/model"
+	"oblique/model"
 
 	"github.com/gorilla/mux"
 )

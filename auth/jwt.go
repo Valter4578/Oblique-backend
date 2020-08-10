@@ -26,7 +26,6 @@ func CreateJWT(email string) (response string, err error) {
 	return "", err
 }
 
-// VerifyToken func will used to Verify the JWT Token while using APIS
 func VerifyToken(tokenString string) (email string, err error) {
 	claims := &model.Claims{}
 
