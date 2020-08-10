@@ -1,1 +1,1 @@
-web: mellow
+web: oblique
