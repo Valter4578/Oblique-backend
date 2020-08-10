@@ -10,6 +10,7 @@ import (
 
 	"oblique/category"
 	"oblique/operation"
+	"oblique/wallet"
 )
 
 func route() {
@@ -27,6 +28,10 @@ func route() {
 	router.HandleFunc("/category/{title}", category.GetCategory)
 	router.HandleFunc("/category", category.AddCategory).Methods("POST")
 	router.HandleFunc("/mostUsedCategories", category.GetMostUsedCategories)
+
+	// wallet
+	router.HandleFunc("/wallets", wallet.GetAllWallets)
+	router.HandleFunc("/wallet/title", wallet.GetWallet)
 
 	log.Fatal(http.ListenAndServe(getPort(), router))
 }
