@@ -17,4 +17,9 @@ var Categories []Category = []Category{
 		Operation{Title: "Fruits", Amount: 10, Type: "expense", ID: 4},
 		Operation{Title: "Meat", Amount: 40, Type: "expense", ID: 5},
 	}},
+	Category{Title: "Enviriment", ImageName: "Enviriment", Color: "#fdaf", Operations: []Operation{
+		Operation{Title: "Cinema", Amount: 3422, Type: "expense", ID: 6},
+		Operation{Title: "PS Store", Amount: 4500, Type: "expense", ID: 7},
+		Operation{Title: "Xbox live", Amount: 3500, Type: "expense", ID: 8},
+	}},
 }

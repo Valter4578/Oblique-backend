@@ -31,3 +31,23 @@ func MostUsedCategories() []model.Category {
 
 	return mostUsedCategories
 }
+
+// CalculatePercantage get the Category as parameter and return float32 value which is percantage of category compared to other categories
+func CalculatePercantage(category model.Category) float32 {
+	// get all operations' amount
+	var totalAmount float32 // summary of all operations' amount
+	for _, c := range model.Categories {
+		for _, operation := range c.Operations {
+			totalAmount += float32(operation.Amount)
+		}
+	}
+
+	// get category's operations' amount
+	var categoryAmount float32
+	for _, operation := range category.Operations {
+		categoryAmount += float32(operation.Amount)
+	}
+
+	// calculate and return percantage
+	return (categoryAmount / totalAmount) * 100
+}
