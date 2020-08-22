@@ -54,3 +54,17 @@ func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(MostUsedCategories())
 }
+
+func GetCategoriesStatistic(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetMostUsedCategories")
+
+	w.Header().Set("Content-Type", "application/json")
+
+	var categories []model.Category
+	for _, category := range model.Categories {
+		category.Percantage = CalculatePercantage(category)
+		categories = append(categories, category)
+	}
+	json.NewEncoder(w).Encode(categories)
+	categories = []model.Category{}
+}

@@ -28,6 +28,7 @@ func route() {
 	router.HandleFunc("/category/{title}", category.GetCategory)
 	router.HandleFunc("/category", category.AddCategory).Methods("POST")
 	router.HandleFunc("/mostUsedCategories", category.GetMostUsedCategories)
+	router.HandleFunc("/statistic", category.GetCategoriesStatistic)
 
 	// wallet
 	router.HandleFunc("/wallets", wallet.GetAllWallets)
