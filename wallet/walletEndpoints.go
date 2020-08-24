@@ -28,3 +28,15 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(wallet)
 }
+
+func AddWallet(w http.ResponseWriter, r *http.Request) {
+	log.Println("AddWallet")
+	w.Header().Set("Content-Type", "application/json")
+
+	// _ := r.URL.Query()
+	var wallet model.Wallet
+	json.NewDecoder(r.Body).Decode(&wallet)
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(model.Wallets)
+}

@@ -54,8 +54,6 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 // AddOperation is post method for add new user's expense
 func AddOperation(w http.ResponseWriter, r *http.Request) {
 	log.Println("addExpense")
-	log.Println(r.URL.Query())
-
 	params := r.URL.Query()
 
 	model.LastOperationID++
