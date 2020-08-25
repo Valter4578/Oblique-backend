@@ -10,21 +10,28 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-var Client *mongo.Client
+// Client ...
+var client *mongo.Client
 
+// ConnectDB used to connect to MongoDB Atlas
 func ConnectDB(uri *string) {
-	Client, err := mongo.NewClient(options.Client().ApplyURI(*uri))
+	var err error
+	client, err = mongo.NewClient(options.Client().ApplyURI(*uri))
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = Client.Connect(ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer Client.Disconnect(ctx)
-	err = Client.Ping(ctx, readpref.Primary())
+
+	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Printf("Connected to database with URI: %v\n", *uri)
 }

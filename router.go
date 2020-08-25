@@ -25,14 +25,15 @@ func route() {
 
 	// category
 	router.HandleFunc("/categories", category.GetAllCategories)
-	router.HandleFunc("/category/{title}", category.GetCategory)
+	router.HandleFunc("/category/{id}", category.GetCategory)
 	router.HandleFunc("/category", category.AddCategory).Methods("POST")
 	router.HandleFunc("/mostUsedCategories", category.GetMostUsedCategories)
 	router.HandleFunc("/statistic", category.GetCategoriesStatistic)
 
 	// wallet
 	router.HandleFunc("/wallets", wallet.GetAllWallets)
-	router.HandleFunc("/wallet/title", wallet.GetWallet)
+	router.HandleFunc("/wallet", wallet.AddWallet).Methods("POST")
+	router.HandleFunc("/wallet/{id}", wallet.GetWallet)
 
 	log.Fatal(http.ListenAndServe(getPort(), router))
 }
