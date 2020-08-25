@@ -6,6 +6,7 @@ import (
 	"oblique/model"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -39,6 +40,40 @@ func GetWallet(id primitive.ObjectID, wallet *model.Wallet) *[]byte {
 	if err != nil {
 		msg := []byte(`{ "message": "` + err.Error() + `" }`)
 		return &msg
+	}
+
+	return nil
+}
+
+func GetWallets(wallets *[]model.Wallet) *error {
+	log.Println("Database: GetWallets")
+
+	collection := client.Database("oblique-dev").Collection("wallets")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := collection.Find(ctx, bson.D{})
+	if err != nil {
+		log.Println(err)
+		return &err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var wallet model.Wallet
+		err = cursor.Decode(&wallet)
+		if err != nil {
+			log.Println(err)
+			return &err
+		}
+
+		*wallets = append(*wallets, wallet)
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		log.Println(err)
+		return &err
 	}
 
 	return nil
