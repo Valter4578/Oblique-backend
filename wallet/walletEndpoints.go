@@ -25,7 +25,7 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	params := mux.Vars(r)
-	id, err := primitive.ObjectIDFromHex(params["id"])
+	id, err := primitive.ObjectIDFromHex(params[" id"])
 	if err != nil {
 		log.Println(err)
 		fmt.Fprintf(w, `{"message":"%v"}`, err.Error())

@@ -10,5 +10,4 @@ func main() {
 	database.ConnectDB(&uri)
 
 	route()
-
 }
