@@ -29,7 +29,7 @@ func InsertWallet(wallet *model.Wallet) *mongo.InsertOneResult {
 }
 
 // GetWallet gets id of wallet and pointer to wallet for decode result into it
-func GetWallet(id primitive.ObjectID, wallet *model.Wallet) *[]byte {
+func GetWallet(id primitive.ObjectID, wallet *model.Wallet) *error {
 	log.Println("Database: GetWallet")
 
 	collection := client.Database("oblique-dev").Collection("wallets")
@@ -38,8 +38,8 @@ func GetWallet(id primitive.ObjectID, wallet *model.Wallet) *[]byte {
 
 	err := collection.FindOne(ctx, model.Wallet{ID: id}).Decode(&wallet)
 	if err != nil {
-		msg := []byte(`{ "message": "` + err.Error() + `" }`)
-		return &msg
+		log.Println(err)
+		return &err
 	}
 
 	return nil
