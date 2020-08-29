@@ -78,3 +78,19 @@ func GetWallets(wallets *[]model.Wallet) *error {
 
 	return nil
 }
+
+func UpdateWallet(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
+	log.Println("Database: UpdateWallet")
+
+	collection := client.Database("oblique-dev").Collection("wallets")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	result, err := collection.UpdateOne(ctx, bson.M{"_id": id}, update)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	return result
+}
