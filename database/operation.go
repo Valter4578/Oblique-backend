@@ -27,23 +27,26 @@ func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 	return result
 }
 
-func GetOperation(id primitive.ObjectID, operation *model.Operation) *error {
+// GetOperation is function that gets the id of operation and returns error if it exist and Operation structure
+func GetOperation(id primitive.ObjectID) (*error, *model.Operation) {
 	log.Println("Database: GetOperation")
 
 	collection := client.Database("oblique-dev").Collection("operations")
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
+	var operation *model.Operation
 	err := collection.FindOne(ctx, model.Operation{ID: id}).Decode(&operation)
 	if err != nil {
 		log.Println(err)
-		return &err
+		return &err, nil
 	}
 
-	return nil
+	return nil, operation
 }
 
-func GetOPerations(operations *[]model.Operation) *error {
+// GetOPerations is method that returns error if it exists and returns slice of operations struct
+func GetOPerations() (*error, *[]model.Operation) {
 	log.Println("Database: GetOPerations")
 
 	collection := client.Database("oblique-dev").Collection("operations")
@@ -53,16 +56,18 @@ func GetOPerations(operations *[]model.Operation) *error {
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		log.Println(err)
-		return &err
+		return &err, nil
 	}
 	defer cursor.Close(ctx)
 
+	var operations *[]model.Operation
 	for cursor.Next(ctx) {
 		var operation model.Operation
+
 		err = cursor.Decode(&operations)
 		if err != nil {
 			log.Println(err)
-			return &err
+			return &err, nil
 		}
 
 		*operations = append(*operations, operation)
@@ -71,12 +76,13 @@ func GetOPerations(operations *[]model.Operation) *error {
 	err = cursor.Err()
 	if err != nil {
 		log.Println(err)
-		return &err
+		return &err, nil
 	}
 
-	return nil
+	return nil, operations
 }
 
+// UpdateOperation is function that gets the id of operation and gets bson object that contains information about the operation's update. Function returns pointer to mongo.UpdateResult
 func UpdateOperation(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 	log.Println("Database: UpdateOperation")
 
