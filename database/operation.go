@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// InsertOperation is function that gets pointer to Operation structure and returns pointer to mongo.InsertOneResult
 func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 	log.Println("Database: InsertOperation")
 	collection := client.Database("oblique-dev").Collection("operations")

@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// InsertCategory is function that gets the pointer to the category structure and returns *mongo.InsertOneResult
 func InsertCategory(category *model.Category) *mongo.InsertOneResult {
 	log.Println("Database: InsertCategory")
 	collection := client.Database("oblique-dev").Collection("categories")
@@ -27,23 +28,26 @@ func InsertCategory(category *model.Category) *mongo.InsertOneResult {
 	return result
 }
 
-func GetCategory(id primitive.ObjectID, category *model.Category) *error {
+// GetCategory is function that gets the id of operation and returns error if it exist and returns *model.Category
+func GetCategory(id primitive.ObjectID) (*error, *model.Category) {
 	log.Println("Database: GetCategory")
 
 	collection := client.Database("oblique-dev").Collection("categories")
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
+	var category *model.Category
 	err := collection.FindOne(ctx, model.Category{ID: id}).Decode(&category)
 	if err != nil {
 		log.Println(err)
-		return &err
+		return &err, nil
 	}
 
-	return nil
+	return nil, category
 }
 
-func GetCategories(categories *[]model.Category) *error {
+// GetCategories is function that returns error and returns all categories slice from db
+func GetCategories() (*error, *[]model.Category) {
 	log.Println("Database: GetCategories")
 
 	collection := client.Database("oblique-dev").Collection("categories")
@@ -53,16 +57,17 @@ func GetCategories(categories *[]model.Category) *error {
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		log.Println(err)
-		return &err
+		return &err, nil
 	}
 	defer cursor.Close(ctx)
 
+	var categories *[]model.Category
 	for cursor.Next(ctx) {
 		var category model.Category
 		err = cursor.Decode(&categories)
 		if err != nil {
 			log.Println(err)
-			return &err
+			return &err, nil
 		}
 
 		*categories = append(*categories, category)
@@ -71,12 +76,13 @@ func GetCategories(categories *[]model.Category) *error {
 	err = cursor.Err()
 	if err != nil {
 		log.Println(err)
-		return &err
+		return &err, nil
 	}
 
-	return nil
+	return nil, categories
 }
 
+// UpdateCategory  is function that gets the id and bson object. Returns *mongo.UpdateResult
 func UpdateCategory(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 	log.Println("Database: UpdateCategory")
 
