@@ -78,7 +78,7 @@ func GetCategories(categories *[]model.Category) *error {
 }
 
 func UpdateCategory(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
-	log.Println("Database: UpdateWallet")
+	log.Println("Database: UpdateCategory")
 
 	collection := client.Database("oblique-dev").Collection("categories")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

@@ -76,3 +76,19 @@ func GetOPerations(operations *[]model.Operation) *error {
 
 	return nil
 }
+
+func UpdateOperation(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
+	log.Println("Database: UpdateOperation")
+
+	collection := client.Database("oblique-dev").Collection("operations")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	result, err := collection.UpdateOne(ctx, bson.M{"_id": id}, update)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	return result
+}
