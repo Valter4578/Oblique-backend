@@ -21,7 +21,7 @@ func route() {
 	router.HandleFunc("/operations", operation.GetOperations)
 	router.HandleFunc("/operation/{id}", operation.GetOperation)
 	router.HandleFunc("/operation", operation.AddOperation).Methods("POST")
-	router.HandleFunc("/operation/{id}", operation.UpdateOperation).Methods("PUT")
+	// router.HandleFunc("/operation/{id}", operation.UpdateOperation).Methods("PUT")
 
 	// category
 	router.HandleFunc("/categories", category.GetAllCategories)

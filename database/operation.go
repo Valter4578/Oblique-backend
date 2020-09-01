@@ -29,7 +29,7 @@ func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 }
 
 // GetOperation is function that gets the id of operation and returns error if it exist and Operation structure
-func GetOperation(id primitive.ObjectID) (*error, *model.Operation) {
+func GetOperation(id primitive.ObjectID) (*model.Operation, error) {
 	log.Println("Database: GetOperation")
 
 	collection := client.Database("oblique-dev").Collection("operations")
@@ -40,14 +40,14 @@ func GetOperation(id primitive.ObjectID) (*error, *model.Operation) {
 	err := collection.FindOne(ctx, model.Operation{ID: id}).Decode(&operation)
 	if err != nil {
 		log.Println(err)
-		return &err, nil
+		return nil, err
 	}
 
-	return nil, operation
+	return operation, err
 }
 
-// GetOPerations is method that returns error if it exists and returns slice of operations struct
-func GetOPerations() (*error, *[]model.Operation) {
+// GetOperations is method that returns error if it exists and returns slice of operations struct
+func GetOperations() (*error, *[]model.Operation) {
 	log.Println("Database: GetOPerations")
 
 	collection := client.Database("oblique-dev").Collection("operations")

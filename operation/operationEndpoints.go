@@ -4,131 +4,123 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"oblique/category"
+	"oblique/database"
 	"oblique/model"
 )
 
 // GetOperations is get method that returns all expenses
 func GetOperations(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetExpenses")
-
 	w.Header().Set("Content-Type", "application/json")
 
-	params := r.URL.Query()
+	// params := r.URL.Query()
 
-	opType := params.Get("type")
-	if opType != "" {
-		operations := operationsType(opType)
-		json.NewEncoder(w).Encode(operations)
-	} else {
-		json.NewEncoder(w).Encode(allOperations())
+	// TODO:- Add check of type
+	// opType := params.Get("type")
+
+	err, operations := database.GetOperations()
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
+	json.NewEncoder(w).Encode(operations)
 }
 
 // GetOperation is get method that returns expense by id
 func GetOperation(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetExpense")
-
 	w.Header().Set("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := primitive.ObjectIDFromHex(vars["id"])
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	for _, operation := range allOperations() {
-		if operation.ID == id {
-			json.NewEncoder(w).Encode(operation)
-		}
+	operation, err := database.GetOperation(id)
+	if err != nil {
+		log.Println(err)
+		return
 	}
+
+	json.NewEncoder(w).Encode(operation)
 }
 
 // AddOperation is post method for add new user's expense
 func AddOperation(w http.ResponseWriter, r *http.Request) {
-	log.Println("addExpense")
-	params := r.URL.Query()
-
-	model.LastOperationID++
+	log.Println("AddOperation")
+	w.Header().Set("Content-Type", "application/json")
 
 	var operation model.Operation
 
-	operation.Title = params.Get("title")
-	operation.Amount, _ = strconv.Atoi(params.Get("amount"))
-	operation.Type = params.Get("type")
+	err := json.NewDecoder(r.Body).Decode(&operation)
+	if err != nil {
+		log.Println("Decode error: " + err.Error())
+		return
+	}
 
-	allOperations := allOperations()
-	operation.ID = allOperations[len(allOperations)-1].ID + 1
-
-	operation.Time = time.Now()
-
-	category, index := category.FindCategory(operation.Title)
-	category.Operations = append(category.Operations, operation)
-
-	model.Categories[index] = category
-
+	result := database.InsertOperation(&operation)
 	w.WriteHeader(http.StatusCreated)
 
-	json.NewEncoder(w).Encode(model.Categories)
+	json.NewEncoder(w).Encode(result)
 }
 
 // UpdateOperation is PUT method that updates expense by id
-func UpdateOperation(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// func UpdateOperation(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		log.Println(err)
-		return
-	}
+// 	params := mux.Vars(r)
+// 	id, err := strconv.Atoi(params["id"])
+// 	if err != nil {
+// 		log.Println(err)
+// 		return
+// 	}
 
-	for _, item := range allOperations() {
-		if item.ID == id {
+// 	for _, item := range allOperations() {
+// 		if item.ID == id {
 
-			category, _ := category.FindCategory(item.Title)
+// 			category, _ := category.FindCategory(item.Title)
 
-			var operation model.Operation
-			decoder := json.NewDecoder(r.Body)
-			decoder.Decode(&operation)
+// 			var operation model.Operation
+// 			decoder := json.NewDecoder(r.Body)
+// 			decoder.Decode(&operation)
 
-			category.Operations[id] = operation
+// 			category.Operations[id] = operation
 
-			json.NewEncoder(w).Encode(&operation)
+// 			json.NewEncoder(w).Encode(&operation)
 
-			return
-		}
-	}
+// 			return
+// 		}
+// 	}
 
-	json.NewEncoder(w).Encode(model.Categories)
-}
+// 	json.NewEncoder(w).Encode(model.Categories)
+// }
 
-// DeleteOperation is DELETE method that deletes expense by id
-func DeleteOperation(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// // DeleteOperation is DELETE method that deletes expense by id
+// func DeleteOperation(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		log.Println(err)
-		return
-	}
+// 	params := mux.Vars(r)
+// 	id, err := strconv.Atoi(params["id"])
+// 	if err != nil {
+// 		log.Println(err)
+// 		return
+// 	}
 
-	for indx, item := range allOperations() {
-		if item.ID == id {
-			category, _ := category.FindCategory(item.Title)
-			category.Operations = append(category.Operations[:indx], category.Operations[indx+1:]...)
+// 	for indx, item := range allOperations() {
+// 		if item.ID == id {
+// 			category, _ := category.FindCategory(item.Title)
+// 			category.Operations = append(category.Operations[:indx], category.Operations[indx+1:]...)
 
-			break
-		}
-	}
+// 			break
+// 		}
+// 	}
 
-	json.NewEncoder(w).Encode(model.Categories)
-}
+// 	json.NewEncoder(w).Encode(model.Categories)
+// }

@@ -2,7 +2,6 @@ package wallet
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -17,8 +16,7 @@ func GetAllWallets(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetAllWallets")
 	w.Header().Set("Content-Type", "application/json")
 
-	var wallets []model.Wallet
-	err := database.GetWallets(&wallets)
+	err, wallets := database.GetWallets()
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -36,17 +34,13 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 	id, err := primitive.ObjectIDFromHex(params["id"])
 	if err != nil {
 		log.Println(err)
-		fmt.Fprintf(w, `{"message":"%v"}`, err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	var wallet model.Wallet
-
-	msg := database.GetWallet(id, &wallet)
-	if msg != nil {
-		log.Println(msg)
-		w.Write(*msg)
+	error, wallet := database.GetWallet(id)
+	if error != nil {
+		log.Println(err)
 		return
 	}
 
