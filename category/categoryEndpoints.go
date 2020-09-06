@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"oblique/database"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"oblique/model"
 
@@ -15,7 +18,11 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	json.NewEncoder(w).Encode(model.Categories)
+	var categories []model.Category
+	// TODO:= Add error response
+	_ = database.GetCategories(&categories)
+
+	json.NewEncoder(w).Encode(categories)
 }
 
 func GetCategory(w http.ResponseWriter, r *http.Request) {
@@ -24,47 +31,49 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	params := mux.Vars(r)
-	title := params["title"]
+	id, err := primitive.ObjectIDFromHex(params["id"])
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-	category, _ := FindCategory(title)
+	var category model.Category
+	_ = database.GetCategory(id, &category)
 
-	json.NewEncoder(w).Encode(category)
+	json.NewEncoder(w).Encode(&category)
 }
 
 func AddCategory(w http.ResponseWriter, r *http.Request) {
 	log.Println("AddCategory")
 
-	params := r.URL.Query()
-
 	var category model.Category
-
-	category.Title = params.Get("title")
-	category.ImageName = params.Get("imageName")
-	category.Color = params.Get("color")
-
-	model.Categories = append(model.Categories, category)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(model.Categories)
-}
-
-func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetMostUsedCategories")
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(MostUsedCategories())
-}
-
-func GetCategoriesStatistic(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetMostUsedCategories")
-
-	w.Header().Set("Content-Type", "application/json")
-
-	var categories []model.Category
-	for _, category := range model.Categories {
-		category.Percantage = CalculatePercantage(category)
-		categories = append(categories, category)
+	err := json.NewDecoder(r.Body).Decode(&category)
+	if err != nil {
+		log.Println(err)
+		return
 	}
-	json.NewEncoder(w).Encode(categories)
-	categories = []model.Category{}
+
+	result := database.InsertCategory(&category)
+	json.NewEncoder(w).Encode(result)
 }
+
+// func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("GetMostUsedCategories")
+
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(MostUsedCategories())
+// }
+
+// func GetCategoriesStatistic(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("GetMostUsedCategories")
+
+// 	w.Header().Set("Content-Type", "application/json")
+
+// 	var categories []model.Category
+// 	for _, category := range model.Categories {
+// 		category.Percantage = CalculatePercantage(category)
+// 		categories = append(categories, category)
+// 	}
+// 	json.NewEncoder(w).Encode(categories)
+// 	categories = []model.Category{}
+// }

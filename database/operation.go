@@ -27,7 +27,7 @@ func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 	return result
 }
 
-func GetOperation(id primitive.ObjectID, operation *model.Operation) *error {
+func GetOperation(id primitive.ObjectID, operation *model.Operation) error {
 	log.Println("Database: GetOperation")
 
 	collection := client.Database("oblique-dev").Collection("operations")
@@ -37,13 +37,13 @@ func GetOperation(id primitive.ObjectID, operation *model.Operation) *error {
 	err := collection.FindOne(ctx, model.Operation{ID: id}).Decode(&operation)
 	if err != nil {
 		log.Println(err)
-		return &err
+		return err
 	}
 
 	return nil
 }
 
-func GetOPerations(operations *[]model.Operation) *error {
+func GetOperations(operations *[]model.Operation) error {
 	log.Println("Database: GetOPerations")
 
 	collection := client.Database("oblique-dev").Collection("operations")
@@ -53,7 +53,7 @@ func GetOPerations(operations *[]model.Operation) *error {
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		log.Println(err)
-		return &err
+		return err
 	}
 	defer cursor.Close(ctx)
 
@@ -62,7 +62,7 @@ func GetOPerations(operations *[]model.Operation) *error {
 		err = cursor.Decode(&operations)
 		if err != nil {
 			log.Println(err)
-			return &err
+			return err
 		}
 
 		*operations = append(*operations, operation)
@@ -71,7 +71,7 @@ func GetOPerations(operations *[]model.Operation) *error {
 	err = cursor.Err()
 	if err != nil {
 		log.Println(err)
-		return &err
+		return err
 	}
 
 	return nil

@@ -43,10 +43,9 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 
 	var wallet model.Wallet
 
-	msg := database.GetWallet(id, &wallet)
-	if msg != nil {
-		log.Println(msg)
-		w.Write(*msg)
+	err = database.GetWallet(id, &wallet)
+	if err != nil {
+		log.Println(err)
 		return
 	}
 

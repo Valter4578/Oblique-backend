@@ -27,7 +27,7 @@ func InsertCategory(category *model.Category) *mongo.InsertOneResult {
 	return result
 }
 
-func GetCategory(id primitive.ObjectID, category *model.Category) *error {
+func GetCategory(id primitive.ObjectID, category *model.Category) error {
 	log.Println("Database: GetCategory")
 
 	collection := client.Database("oblique-dev").Collection("categories")
@@ -37,13 +37,13 @@ func GetCategory(id primitive.ObjectID, category *model.Category) *error {
 	err := collection.FindOne(ctx, model.Category{ID: id}).Decode(&category)
 	if err != nil {
 		log.Println(err)
-		return &err
+		return err
 	}
 
 	return nil
 }
 
-func GetCategories(categories *[]model.Category) *error {
+func GetCategories(categories *[]model.Category) error {
 	log.Println("Database: GetCategories")
 
 	collection := client.Database("oblique-dev").Collection("categories")
@@ -53,7 +53,7 @@ func GetCategories(categories *[]model.Category) *error {
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		log.Println(err)
-		return &err
+		return err
 	}
 	defer cursor.Close(ctx)
 
@@ -62,7 +62,7 @@ func GetCategories(categories *[]model.Category) *error {
 		err = cursor.Decode(&categories)
 		if err != nil {
 			log.Println(err)
-			return &err
+			return err
 		}
 
 		*categories = append(*categories, category)
@@ -71,7 +71,7 @@ func GetCategories(categories *[]model.Category) *error {
 	err = cursor.Err()
 	if err != nil {
 		log.Println(err)
-		return &err
+		return err
 	}
 
 	return nil
