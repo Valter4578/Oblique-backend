@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"oblique/logger"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -33,5 +34,5 @@ func ConnectDB(uri *string) {
 		log.Fatal(err)
 	}
 
-	log.Printf("Connected to database with URI: %v\n", *uri)
+	logger.LogInfo("Connected to database")
 }

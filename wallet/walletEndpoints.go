@@ -2,11 +2,11 @@ package wallet
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
 	"oblique/database"
+	"oblique/logger"
 	"oblique/model"
 
 	"github.com/gorilla/mux"
@@ -20,8 +20,8 @@ func GetAllWallets(w http.ResponseWriter, r *http.Request) {
 	var wallets []model.Wallet
 	err := database.GetWallets(&wallets)
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 
@@ -35,9 +35,8 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
 	if err != nil {
-		log.Println(err)
-		fmt.Fprintf(w, `{"message":"%v"}`, err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 
@@ -45,7 +44,8 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 
 	err = database.GetWallet(id, &wallet)
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 
@@ -60,9 +60,11 @@ func AddWallet(w http.ResponseWriter, r *http.Request) {
 	var wallet model.Wallet
 	err := json.NewDecoder(r.Body).Decode(&wallet)
 	if err != nil {
-		log.Println("Decode error: " + err.Error())
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
+
 	result := database.InsertWallet(&wallet)
 
 	log.Println(result)

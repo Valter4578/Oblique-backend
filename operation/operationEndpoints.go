@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"oblique/database"
+	"oblique/logger"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -20,7 +21,12 @@ func GetOperations(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var operations []model.Operation
-	_ = database.GetOperations(&operations)
+	err := database.GetOperations(&operations)
+	if err != nil {
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
+		return
+	}
 
 	json.NewEncoder(w).Encode(&operations)
 }
@@ -34,12 +40,18 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(vars["id"])
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 
 	var operation model.Operation
-	_ = database.GetOperation(id, &operation)
+	err = database.GetOperation(id, &operation)
+	if err != nil {
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
+		return
+	}
 
 	json.NewEncoder(w).Encode(&operation)
 }
@@ -51,7 +63,8 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 	var operation model.Operation
 	err := json.NewDecoder(r.Body).Decode(&operation)
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 

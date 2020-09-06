@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"oblique/database"
+	"oblique/logger"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -19,8 +20,13 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var categories []model.Category
-	// TODO:= Add error response
-	_ = database.GetCategories(&categories)
+
+	err := database.GetCategories(&categories)
+	if err != nil {
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
+		return
+	}
 
 	json.NewEncoder(w).Encode(categories)
 }
@@ -33,12 +39,18 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 
 	var category model.Category
-	_ = database.GetCategory(id, &category)
+	err = database.GetCategory(id, &category)
+	if err != nil {
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
+		return
+	}
 
 	json.NewEncoder(w).Encode(&category)
 }
@@ -49,7 +61,8 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 	var category model.Category
 	err := json.NewDecoder(r.Body).Decode(&category)
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 

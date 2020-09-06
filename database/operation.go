@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"oblique/logger"
 	"oblique/model"
 	"time"
 
@@ -20,7 +21,7 @@ func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 
 	result, err := collection.InsertOne(ctx, operation)
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
 		return nil
 	}
 
@@ -36,7 +37,7 @@ func GetOperation(id primitive.ObjectID, operation *model.Operation) error {
 
 	err := collection.FindOne(ctx, model.Operation{ID: id}).Decode(&operation)
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
 		return err
 	}
 
@@ -52,7 +53,7 @@ func GetOperations(operations *[]model.Operation) error {
 
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
 		return err
 	}
 	defer cursor.Close(ctx)
@@ -61,7 +62,7 @@ func GetOperations(operations *[]model.Operation) error {
 		var operation model.Operation
 		err = cursor.Decode(&operations)
 		if err != nil {
-			log.Println(err)
+			logger.LogError(&err)
 			return err
 		}
 
@@ -70,7 +71,7 @@ func GetOperations(operations *[]model.Operation) error {
 
 	err = cursor.Err()
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
 		return err
 	}
 
@@ -86,7 +87,7 @@ func UpdateOperation(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 
 	result, err := collection.UpdateOne(ctx, bson.M{"_id": id}, update)
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
 		return nil
 	}
 
