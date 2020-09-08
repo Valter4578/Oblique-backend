@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"oblique/database"
+	"oblique/db"
 	"oblique/logger"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -21,7 +21,7 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 
 	var categories []model.Category
 
-	err := database.GetCategories(&categories)
+	err := db.GetCategories(&categories)
 	if err != nil {
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
@@ -45,7 +45,7 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var category model.Category
-	err = database.GetCategory(id, &category)
+	err = db.GetCategory(id, &category)
 	if err != nil {
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
@@ -66,16 +66,16 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := database.InsertCategory(&category)
+	result := db.InsertCategory(&category)
 	json.NewEncoder(w).Encode(result)
 }
 
-// func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
-// 	log.Println("GetMostUsedCategories")
+func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetMostUsedCategories")
 
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(MostUsedCategories())
-// }
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(MostUsedCategories())
+}
 
 // func GetCategoriesStatistic(w http.ResponseWriter, r *http.Request) {
 // 	log.Println("GetMostUsedCategories")

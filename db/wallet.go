@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"context"
@@ -12,14 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
-	log.Println("Database: InsertOperation")
-	collection := client.Database("oblique-dev").Collection("operations")
+// InsertWallet gets wallet pointer and returns pointer to mongo.InsertOneResult
+func InsertWallet(wallet *model.Wallet) *mongo.InsertOneResult {
+	log.Println("Database: InsertWallet")
+	collection := client.Database("oblique-dev").Collection("wallets")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	result, err := collection.InsertOne(ctx, operation)
+	result, err := collection.InsertOne(ctx, wallet)
 	if err != nil {
 		logger.LogError(&err)
 		return nil
@@ -28,14 +29,15 @@ func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 	return result
 }
 
-func GetOperation(id primitive.ObjectID, operation *model.Operation) error {
-	log.Println("Database: GetOperation")
+// GetWallet gets id of wallet and pointer to wallet for decode result into it
+func GetWallet(id primitive.ObjectID, wallet *model.Wallet) error {
+	log.Println("Database: GetWallet")
 
-	collection := client.Database("oblique-dev").Collection("operations")
+	collection := client.Database("oblique-dev").Collection("wallets")
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	err := collection.FindOne(ctx, model.Operation{ID: id}).Decode(&operation)
+	err := collection.FindOne(ctx, model.Wallet{ID: id}).Decode(&wallet)
 	if err != nil {
 		logger.LogError(&err)
 		return err
@@ -44,10 +46,10 @@ func GetOperation(id primitive.ObjectID, operation *model.Operation) error {
 	return nil
 }
 
-func GetOperations(operations *[]model.Operation) error {
-	log.Println("Database: GetOPerations")
+func GetWallets(wallets *[]model.Wallet) error {
+	log.Println("Database: GetWallets")
 
-	collection := client.Database("oblique-dev").Collection("operations")
+	collection := client.Database("oblique-dev").Collection("wallets")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -59,14 +61,14 @@ func GetOperations(operations *[]model.Operation) error {
 	defer cursor.Close(ctx)
 
 	for cursor.Next(ctx) {
-		var operation model.Operation
-		err = cursor.Decode(&operations)
+		var wallet model.Wallet
+		err = cursor.Decode(&wallet)
 		if err != nil {
 			logger.LogError(&err)
 			return err
 		}
 
-		*operations = append(*operations, operation)
+		*wallets = append(*wallets, wallet)
 	}
 
 	err = cursor.Err()
@@ -78,10 +80,10 @@ func GetOperations(operations *[]model.Operation) error {
 	return nil
 }
 
-func UpdateOperation(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
-	log.Println("Database: UpdateOperation")
+func UpdateWallet(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
+	log.Println("Database: UpdateWallet")
 
-	collection := client.Database("oblique-dev").Collection("operations")
+	collection := client.Database("oblique-dev").Collection("wallets")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

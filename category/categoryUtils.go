@@ -1,5 +1,11 @@
 package category
 
+import (
+	"oblique/db"
+	"oblique/model"
+	"sort"
+)
+
 // // FindCategory finds a category by its title. Returns category and index
 // func FindCategory(title string) (model.Category, int) {
 // 	var category model.Category
@@ -15,16 +21,17 @@ package category
 // 	return category, index
 // }
 
-// // MostUsedCategories is method that returns slice of most used categories based on number of expenses
-// func MostUsedCategories() []model.Category {
-// 	mostUsedCategories := model.Categories
+// MostUsedCategories is method that returns slice of most used categories based on number of expenses
+func MostUsedCategories() []model.Category {
+	var mostUsedCategories []model.Category
+	db.GetCategories(&mostUsedCategories)
 
-// 	sort.SliceStable(mostUsedCategories, func(i, j int) bool {
-// 		return len(mostUsedCategories[i].Operations) > len(mostUsedCategories[j].Operations)
-// 	})
+	sort.SliceStable(mostUsedCategories, func(i, j int) bool {
+		return len(mostUsedCategories[i].Operations) > len(mostUsedCategories[j].Operations)
+	})
 
-// 	return mostUsedCategories
-// }
+	return mostUsedCategories
+}
 
 // CalculatePercantage get the Category as parameter and return float32 value which is percantage of category compared to other categories
 // func CalculatePercantage(category model.Category) float32 {

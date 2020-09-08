@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"oblique/database"
+	"oblique/db"
 	"oblique/logger"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -21,7 +21,7 @@ func GetOperations(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var operations []model.Operation
-	err := database.GetOperations(&operations)
+	err := db.GetOperations(&operations)
 	if err != nil {
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
@@ -46,7 +46,7 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var operation model.Operation
-	err = database.GetOperation(id, &operation)
+	err = db.GetOperation(id, &operation)
 	if err != nil {
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
@@ -68,7 +68,7 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := database.InsertOperation(&operation)
+	result := db.InsertOperation(&operation)
 	json.NewEncoder(w).Encode(result)
 }
 

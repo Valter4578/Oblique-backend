@@ -1,13 +1,13 @@
 package main
 
 import (
-	"oblique/database"
+	"oblique/db"
 	"os"
 )
 
 func main() {
 	uri := os.Getenv("URI")
-	database.ConnectDB(&uri)
+	db.ConnectDB(&uri)
 
 	route()
 }
