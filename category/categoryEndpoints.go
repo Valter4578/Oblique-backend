@@ -4,15 +4,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"oblique/db"
-	"oblique/logger"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"oblique/database"
+	"oblique/db"
+	"oblique/logger"
 	"oblique/model"
 )
 
@@ -21,18 +19,12 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-<<<<<<< HEAD
-	err, categories := database.GetCategories()
-	if err != nil {
-		log.Println(err)
-=======
 	var categories []model.Category
 
 	err := db.GetCategories(&categories)
 	if err != nil {
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
->>>>>>> master
 		return
 	}
 
@@ -47,15 +39,6 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
 	if err != nil {
-<<<<<<< HEAD
-		log.Println(err)
-		return
-	}
-
-	err, category := database.GetCategory(id)
-	if err != nil {
-		log.Println(err)
-=======
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
@@ -66,7 +49,6 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
->>>>>>> master
 		return
 	}
 
@@ -84,19 +66,8 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-<<<<<<< HEAD
-	category.Title = params.Get("title")
-	category.ImageName = params.Get("imageName")
-	category.Color = params.Get("color")
-
-	// model.Categories = append(model.Categories, category)
-
-	w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(model.Categories)
-=======
 	result := db.InsertCategory(&category)
 	json.NewEncoder(w).Encode(result)
->>>>>>> master
 }
 
 func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
@@ -111,16 +82,6 @@ func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
 
 // 	w.Header().Set("Content-Type", "application/json")
 
-<<<<<<< HEAD
-	// var categories []model.Category
-	// for _, category := range model.Categories {
-	// 	category.Percantage = CalculatePercantage(category)
-	// 	categories = append(categories, category)
-	// }
-	// json.NewEncoder(w).Encode(categories)
-
-}
-=======
 // 	var categories []model.Category
 // 	for _, category := range model.Categories {
 // 		category.Percantage = CalculatePercantage(category)
@@ -129,4 +90,3 @@ func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(categories)
 // 	categories = []model.Category{}
 // }
->>>>>>> master

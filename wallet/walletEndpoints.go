@@ -17,12 +17,8 @@ func GetAllWallets(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetAllWallets")
 	w.Header().Set("Content-Type", "application/json")
 
-<<<<<<< HEAD
-	err, wallets := database.GetWallets()
-=======
 	var wallets []model.Wallet
 	err := db.GetWallets(&wallets)
->>>>>>> master
 	if err != nil {
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
@@ -39,16 +35,6 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
 	if err != nil {
-<<<<<<< HEAD
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	error, wallet := database.GetWallet(id)
-	if error != nil {
-		log.Println(err)
-=======
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
@@ -60,7 +46,6 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logger.LogError(&err)
 		w.Write([]byte(logger.JSONError(err)))
->>>>>>> master
 		return
 	}
 
