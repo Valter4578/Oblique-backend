@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"oblique/database"
+	"oblique/db"
+	"oblique/logger"
 	"oblique/model"
 
 	"github.com/gorilla/mux"
@@ -16,10 +17,15 @@ func GetAllWallets(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetAllWallets")
 	w.Header().Set("Content-Type", "application/json")
 
+<<<<<<< HEAD
 	err, wallets := database.GetWallets()
+=======
+	var wallets []model.Wallet
+	err := db.GetWallets(&wallets)
+>>>>>>> master
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 
@@ -33,6 +39,7 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
 	if err != nil {
+<<<<<<< HEAD
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -41,6 +48,19 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 	error, wallet := database.GetWallet(id)
 	if error != nil {
 		log.Println(err)
+=======
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
+		return
+	}
+
+	var wallet model.Wallet
+
+	err = db.GetWallet(id, &wallet)
+	if err != nil {
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
+>>>>>>> master
 		return
 	}
 
@@ -51,14 +71,15 @@ func AddWallet(w http.ResponseWriter, r *http.Request) {
 	log.Println("AddWallet")
 	w.Header().Set("Content-Type", "application/json")
 
-	// _ := r.URL.Query()
 	var wallet model.Wallet
 	err := json.NewDecoder(r.Body).Decode(&wallet)
 	if err != nil {
-		log.Println("Decode error: " + err.Error())
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
-	result := database.InsertWallet(&wallet)
+
+	result := db.InsertWallet(&wallet)
 
 	log.Println(result)
 	json.NewEncoder(w).Encode(result)

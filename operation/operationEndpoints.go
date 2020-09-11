@@ -4,11 +4,21 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+<<<<<<< HEAD
+=======
+	"oblique/db"
+	"oblique/logger"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+>>>>>>> master
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
+<<<<<<< HEAD
 	"oblique/database"
+=======
+>>>>>>> master
 	"oblique/model"
 )
 
@@ -17,6 +27,7 @@ func GetOperations(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetExpenses")
 	w.Header().Set("Content-Type", "application/json")
 
+<<<<<<< HEAD
 	// params := r.URL.Query()
 
 	// TODO:- Add check of type
@@ -29,20 +40,38 @@ func GetOperations(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(operations)
+=======
+	var operations []model.Operation
+	err := db.GetOperations(&operations)
+	if err != nil {
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
+		return
+	}
+
+	json.NewEncoder(w).Encode(&operations)
+>>>>>>> master
 }
 
 // GetOperation is get method that returns expense by id
 func GetOperation(w http.ResponseWriter, r *http.Request) {
+<<<<<<< HEAD
 	log.Println("GetExpense")
+=======
+	log.Println("GetOperation")
+
+>>>>>>> master
 	w.Header().Set("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(vars["id"])
 	if err != nil {
-		log.Println(err)
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 
+<<<<<<< HEAD
 	operation, err := database.GetOperation(id)
 	if err != nil {
 		log.Println(err)
@@ -50,11 +79,23 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(operation)
+=======
+	var operation model.Operation
+	err = db.GetOperation(id, &operation)
+	if err != nil {
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
+		return
+	}
+
+	json.NewEncoder(w).Encode(&operation)
+>>>>>>> master
 }
 
 // AddOperation is post method for add new user's expense
 func AddOperation(w http.ResponseWriter, r *http.Request) {
 	log.Println("AddOperation")
+<<<<<<< HEAD
 	w.Header().Set("Content-Type", "application/json")
 
 	var operation model.Operation
@@ -103,6 +144,39 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 // }
 
 // // DeleteOperation is DELETE method that deletes expense by id
+=======
+
+	var operation model.Operation
+	err := json.NewDecoder(r.Body).Decode(&operation)
+	if err != nil {
+		logger.LogError(&err)
+		w.Write([]byte(logger.JSONError(err)))
+		return
+	}
+
+	params := r.URL.Query()
+	id := params.Get("categoryId")
+	if id != "" {
+		objID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			logger.LogError(&err)
+			w.Write([]byte(logger.JSONError(err)))
+			return
+		}
+		err = db.InsertOperationToCategory(&operation, objID)
+		if err != nil { 
+			logger.LogError(&err)
+			w.Write([]byte(logger))
+		}
+	} else {
+		result := db.InsertOperation(&operation)
+		json.NewEncoder(w).Encode(result)
+	}
+
+}
+
+// DeleteOperation is DELETE method that deletes expense by id
+>>>>>>> master
 // func DeleteOperation(w http.ResponseWriter, r *http.Request) {
 // 	w.Header().Set("Content-Type", "application/json")
 
