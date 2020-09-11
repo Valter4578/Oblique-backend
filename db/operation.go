@@ -77,7 +77,7 @@ func GetOperation(id primitive.ObjectID, operation *model.Operation) error {
 }
 
 func GetOperations(operations *[]model.Operation) error {
-	log.Println("Database: GetOPerations")
+	log.Println("Database: GetOperations")
 
 	collection := client.Database("oblique-dev").Collection("operations")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -92,7 +92,7 @@ func GetOperations(operations *[]model.Operation) error {
 
 	for cursor.Next(ctx) {
 		var operation model.Operation
-		err = cursor.Decode(&operations)
+		err = cursor.Decode(&operation)
 		if err != nil {
 			logger.LogError(&err)
 			return err

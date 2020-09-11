@@ -25,7 +25,7 @@ func GetAllWallets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(wallets)
+	json.NewEncoder(w).Encode(&wallets)
 }
 
 func GetWallet(w http.ResponseWriter, r *http.Request) {
