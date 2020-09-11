@@ -2,9 +2,11 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"oblique/logger"
 	"oblique/model"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -26,6 +28,35 @@ func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 	}
 
 	return result
+}
+
+func InsertOperationToCategory(operation *model.Operation, categoryID primitive.ObjectID) {
+	log.Println("Database: InsertOperationToCategory")
+
+	collection := client.Database("oblique-dev").Collection("operation")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := collection.InsertOne(ctx, operation)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	stringID := fmt.Sprintf("%v", result.InsertedID)
+	i := strings.IndexByte(stringID, '"')
+	if i != -1 {
+		stringID = stringID[i+1 : len(stringID)-2]
+	}
+
+	id, err := primitive.ObjectIDFromHex(stringID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	addOperation(categoryID, id)
 }
 
 func GetOperation(id primitive.ObjectID, operation *model.Operation) error {

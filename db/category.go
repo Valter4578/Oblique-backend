@@ -93,3 +93,24 @@ func UpdateCategory(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 
 	return result
 }
+
+func addOperation(categoryID primitive.ObjectID, operationID primitive.ObjectID) error {
+	collection := client.Database("oblique-dev").Collection("categories")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": categoryID}
+	update := bson.D{
+		{"$push", bson.D{
+			{"operations", operationID},
+		}},
+	}
+
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		logger.LogError(&err)
+		return err
+	}
+
+	return nil
+}

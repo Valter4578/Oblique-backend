@@ -37,7 +37,10 @@ func MostUsedCategories() []model.Category {
 // func CalculatePercantage(category model.Category) float32 {
 // 	// get all operations' amount
 // 	var totalAmount float32 // summary of all operations' amount
-// 	for _, c := range model.Categories {
+// 	var categories []model.Category
+// 	db.GetCategories(&categories)
+
+// 	for _, c := range categories {
 // 		for _, operation := range c.Operations {
 // 			totalAmount += float32(operation.Amount)
 // 		}

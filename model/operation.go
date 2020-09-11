@@ -14,6 +14,3 @@ type Operation struct {
 	Time   time.Time          `json:"time,omitempty" bson:"time,omitempty"`
 	ID     primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 }
-
-// LastOperationID is identifier of last expense
-var LastOperationID int

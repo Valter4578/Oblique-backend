@@ -68,8 +68,25 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := db.InsertOperation(&operation)
-	json.NewEncoder(w).Encode(result)
+	params := r.URL.Query()
+	id := params.Get("categoryId")
+	if id != "" {
+		objID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			logger.LogError(&err)
+			w.Write([]byte(logger.JSONError(err)))
+			return
+		}
+		err = db.InsertOperationToCategory(&operation, objID)
+		if err != nil { 
+			logger.LogError(&err)
+			w.Write([]byte(logger))
+		}
+	} else {
+		result := db.InsertOperation(&operation)
+		json.NewEncoder(w).Encode(result)
+	}
+
 }
 
 // DeleteOperation is DELETE method that deletes expense by id
