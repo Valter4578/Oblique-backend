@@ -1,6 +1,7 @@
 package operation
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -63,4 +64,29 @@ func TestGetOperation(t *testing.T) {
 	body := rr.Body.String()
 
 	require.JSONEq(t, expected, body)
+}
+
+func TestAddOperation(t *testing.T) {
+	uri := os.Getenv("URI")
+	fmt.Println(uri)
+	db.ConnectDB(&uri)
+
+	jsonStr := []byte(`{"title": "test mongo insert operation to category 1001", "amount": 1001}`)
+
+	req, err := http.NewRequest("POST", "/operation", bytes.NewBuffer(jsonStr))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	handler := http.HandlerFunc(AddOperation)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	t.Log(rr.Body.String())
+
+	if status := rr.Code; status != http.StatusCreated {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusCreated)
+	}
 }

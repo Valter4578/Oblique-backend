@@ -75,18 +75,24 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			logger.LogError(&err)
 			w.Write([]byte(logger.JSONError(err)))
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		err = db.InsertOperationToCategory(&operation, objID)
 		if err != nil {
 			logger.LogError(&err)
 			w.Write([]byte(logger.JSONError(err)))
-		} else {
-			msg := logger.JSONMessage("The operation was successfully added to the category")
-			w.Write([]byte(msg))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
+		msg := logger.JSONMessage("The operation was successfully added to the category")
+		w.Write([]byte(msg))
+
+		w.WriteHeader(http.StatusCreated)
 	} else {
 		result := db.InsertOperation(&operation)
+		w.WriteHeader(http.StatusCreated)
+
 		json.NewEncoder(w).Encode(result)
 	}
 }
