@@ -12,6 +12,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - env: 
+          URI: $URI
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
