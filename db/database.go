@@ -16,6 +16,7 @@ var client *mongo.Client
 
 // ConnectDB used to connect to MongoDB Atlas
 func ConnectDB(uri *string) {
+	log.Println(*uri)
 	var err error
 	client, err = mongo.NewClient(options.Client().ApplyURI(*uri))
 
