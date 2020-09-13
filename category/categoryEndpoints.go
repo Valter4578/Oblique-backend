@@ -23,7 +23,7 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 
 	err := db.GetCategories(&categories)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -39,7 +39,7 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -47,7 +47,7 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 	var category model.Category
 	err = db.GetCategory(id, &category)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -61,7 +61,7 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 	var category model.Category
 	err := json.NewDecoder(r.Body).Decode(&category)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}

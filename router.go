@@ -19,9 +19,9 @@ func route() {
 
 	// operations
 	router.HandleFunc("/operations", operation.GetOperations)
+	router.HandleFunc("/operation/{id}", operation.DeleteOperation).Methods("DELETE")
 	router.HandleFunc("/operation/{id}", operation.GetOperation)
 	router.HandleFunc("/operation", operation.AddOperation).Methods("POST")
-	// router.HandleFunc("/operation/{id}", operation.UpdateOperation).Methods("PUT")
 
 	// category
 	router.HandleFunc("/categories", category.GetAllCategories)
@@ -31,7 +31,7 @@ func route() {
 	// router.HandleFunc("/statistic", category.GetCategoriesStatistic)
 
 	// wallet
-	router.HandleFunc("/wallets", wallet.GetAllWallets)
+	router.HandleFunc("/wallets", wallet.GetWallets)
 	router.HandleFunc("/wallet", wallet.AddWallet).Methods("POST")
 	router.HandleFunc("/wallet/{id}", wallet.GetWallet)
 

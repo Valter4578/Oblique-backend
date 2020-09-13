@@ -13,14 +13,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func GetAllWallets(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetAllWallets")
+func GetWallets(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetWallets")
 	w.Header().Set("Content-Type", "application/json")
 
 	var wallets []model.Wallet
 	err := db.GetWallets(&wallets)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -35,7 +35,7 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -44,7 +44,7 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 
 	err = db.GetWallet(id, &wallet)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -59,15 +59,12 @@ func AddWallet(w http.ResponseWriter, r *http.Request) {
 	var wallet model.Wallet
 	err := json.NewDecoder(r.Body).Decode(&wallet)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 
 	result := db.InsertWallet(&wallet)
-
-	log.Println(result)
-	json.NewEncoder(w).Encode(result)
-
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(result)
 }

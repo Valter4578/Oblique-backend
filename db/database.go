@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"oblique/logger"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,10 +15,11 @@ import (
 var client *mongo.Client
 
 // ConnectDB used to connect to MongoDB Atlas
-func ConnectDB(uri *string) {
-	log.Println(*uri)
+func ConnectDB(password string) {
+	uri := fmt.Sprintf("mongodb+srv://valter:%v@oblique.bifuo.mongodb.net/oblique?retryWrites=true&w=majority", password)
+
 	var err error
-	client, err = mongo.NewClient(options.Client().ApplyURI(*uri))
+	client, err = mongo.NewClient(options.Client().ApplyURI(uri))
 
 	if err != nil {
 		log.Fatal(err)
@@ -35,5 +36,5 @@ func ConnectDB(uri *string) {
 		log.Fatal(err)
 	}
 
-	logger.LogInfo("Connected to database")
+	log.Println("Connected to database")
 }

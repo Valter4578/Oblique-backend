@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"log"
-	"oblique/logger"
 	"oblique/model"
 	"time"
 
@@ -22,7 +21,7 @@ func InsertWallet(wallet *model.Wallet) *mongo.InsertOneResult {
 
 	result, err := collection.InsertOne(ctx, wallet)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return nil
 	}
 
@@ -39,7 +38,7 @@ func GetWallet(id primitive.ObjectID, wallet *model.Wallet) error {
 
 	err := collection.FindOne(ctx, model.Wallet{ID: id}).Decode(&wallet)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return err
 	}
 
@@ -55,7 +54,7 @@ func GetWallets(wallets *[]model.Wallet) error {
 
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return err
 	}
 	defer cursor.Close(ctx)
@@ -64,7 +63,7 @@ func GetWallets(wallets *[]model.Wallet) error {
 		var wallet model.Wallet
 		err = cursor.Decode(&wallet)
 		if err != nil {
-			logger.LogError(&err)
+			log.Println(err)
 			return err
 		}
 
@@ -73,7 +72,7 @@ func GetWallets(wallets *[]model.Wallet) error {
 
 	err = cursor.Err()
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return err
 	}
 
@@ -89,7 +88,7 @@ func UpdateWallet(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 
 	result, err := collection.UpdateOne(ctx, bson.M{"_id": id}, update)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return nil
 	}
 

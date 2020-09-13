@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	uri := os.Getenv("URI")
-	db.ConnectDB(&uri)
+	password := os.Getenv("DBPASSWORD")
+	db.ConnectDB(password)
 
 	route()
 }

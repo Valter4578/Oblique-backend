@@ -23,7 +23,7 @@ func GetOperations(w http.ResponseWriter, r *http.Request) {
 	var operations []model.Operation
 	err := db.GetOperations(&operations)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -40,7 +40,7 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(vars["id"])
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -48,7 +48,7 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 	var operation model.Operation
 	err = db.GetOperation(id, &operation)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -63,7 +63,7 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 	var operation model.Operation
 	err := json.NewDecoder(r.Body).Decode(&operation)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
@@ -73,14 +73,14 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 	if id != "" {
 		objID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			logger.LogError(&err)
+			log.Println(err)
 			w.Write([]byte(logger.JSONError(err)))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		err = db.InsertOperationToCategory(&operation, objID)
 		if err != nil {
-			logger.LogError(&err)
+			log.Println(err)
 			w.Write([]byte(logger.JSONError(err)))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -98,24 +98,24 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteOperation is DELETE method that deletes expense by id
-// func DeleteOperation(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
+func DeleteOperation(w http.ResponseWriter, r *http.Request) {
+	log.Println("DeleteOperation")
+	w.Header().Set("Content-Type", "application/json")
 
-// 	params := mux.Vars(r)
-// 	id, err := strconv.Atoi(params["id"])
-// 	if err != nil {
-// 		log.Println(err)
-// 		return
-// 	}
+	params := mux.Vars(r)
+	id, err := primitive.ObjectIDFromHex(params["id"])
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-// 	for indx, item := range allOperations() {
-// 		if item.ID == id {
-// 			category, _ := category.FindCategory(item.Title)
-// 			category.Operations = append(category.Operations[:indx], category.Operations[indx+1:]...)
+	err = db.DeleteOperation(id)
+	if err != nil {
+		json := logger.JSONError(err)
+		w.Write([]byte(json))
+		return
+	}
 
-// 			break
-// 		}
-// 	}
-
-// 	json.NewEncoder(w).Encode(model.Categories)
-// }
+	msg := logger.JSONMessage("Successfully delete operation with id ", id.String)
+	w.Write([]byte(msg))
+}

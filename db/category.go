@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"log"
-	"oblique/logger"
 	"oblique/model"
 	"time"
 
@@ -21,7 +20,7 @@ func InsertCategory(category *model.Category) *mongo.InsertOneResult {
 
 	result, err := collection.InsertOne(ctx, category)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return nil
 	}
 
@@ -37,7 +36,7 @@ func GetCategory(id primitive.ObjectID, category *model.Category) error {
 
 	err := collection.FindOne(ctx, model.Category{ID: id}).Decode(&category)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return err
 	}
 
@@ -53,7 +52,7 @@ func GetCategories(categories *[]model.Category) error {
 
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return err
 	}
 	defer cursor.Close(ctx)
@@ -62,7 +61,7 @@ func GetCategories(categories *[]model.Category) error {
 		var category model.Category
 		err = cursor.Decode(&categories)
 		if err != nil {
-			logger.LogError(&err)
+			log.Println(err)
 			return err
 		}
 
@@ -71,7 +70,7 @@ func GetCategories(categories *[]model.Category) error {
 
 	err = cursor.Err()
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return err
 	}
 
@@ -87,7 +86,7 @@ func UpdateCategory(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 
 	result, err := collection.UpdateOne(ctx, bson.M{"_id": id}, update)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return nil
 	}
 
@@ -108,9 +107,9 @@ func addOperation(categoryID primitive.ObjectID, operationID primitive.ObjectID)
 
 	_, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		logger.LogError(&err)
-		return 
+		log.Println(err)
+		return
 	}
 
-	return 
+	return
 }

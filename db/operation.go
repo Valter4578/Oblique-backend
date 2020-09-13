@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"oblique/logger"
 	"oblique/model"
 	"strings"
 	"time"
@@ -23,7 +22,7 @@ func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 
 	result, err := collection.InsertOne(ctx, operation)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return nil
 	}
 
@@ -69,7 +68,7 @@ func GetOperation(id primitive.ObjectID, operation *model.Operation) error {
 
 	err := collection.FindOne(ctx, model.Operation{ID: id}).Decode(&operation)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return err
 	}
 
@@ -85,7 +84,7 @@ func GetOperations(operations *[]model.Operation) error {
 
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return err
 	}
 	defer cursor.Close(ctx)
@@ -94,7 +93,7 @@ func GetOperations(operations *[]model.Operation) error {
 		var operation model.Operation
 		err = cursor.Decode(&operation)
 		if err != nil {
-			logger.LogError(&err)
+			log.Println(err)
 			return err
 		}
 
@@ -103,7 +102,7 @@ func GetOperations(operations *[]model.Operation) error {
 
 	err = cursor.Err()
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return err
 	}
 
@@ -119,9 +118,25 @@ func UpdateOperation(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 
 	result, err := collection.UpdateOne(ctx, bson.M{"_id": id}, update)
 	if err != nil {
-		logger.LogError(&err)
+		log.Println(err)
 		return nil
 	}
 
 	return result
+}
+
+func DeleteOperation(id primitive.ObjectID) error {
+	log.Println("Database: DeleteOperation")
+
+	collection := client.Database("oblique-dev").Collection("operations")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := collection.DeleteOne(ctx, bson.M{"_id": id})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
 }
