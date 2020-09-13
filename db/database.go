@@ -16,7 +16,8 @@ var client *mongo.Client
 
 // ConnectDB used to connect to MongoDB Atlas
 func ConnectDB(password string) {
-	uri := fmt.Sprintf("mongodb+srv://valter:%v@oblique.bifuo.mongodb.net/oblique?retryWrites=true&w=majority", password)
+	part := "mongodb+srv://valter:"
+	uri := fmt.Sprintf("%v%v@oblique.bifuo.mongodb.net/oblique?retryWrites=true&w=majority", part, password)
 	fmt.Println(uri)
 
 	var err error
