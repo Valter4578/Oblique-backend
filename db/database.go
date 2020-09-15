@@ -16,9 +16,10 @@ var client *mongo.Client
 
 // ConnectDB used to connect to MongoDB Atlas
 func ConnectDB(password string) {
-	part := "mongodb+srv://valter:"
-	uri := fmt.Sprintf("%v%v@oblique.bifuo.mongodb.net/oblique?retryWrites=true&w=majority", part, password)
-	fmt.Println(uri)
+	// because github actions cut string behind password from secrets
+	uri := "mongodb+srv://valter:"
+	part := fmt.Sprintf("%v@oblique.bifuo.mongodb.net/oblique?retryWrites=true&w=majority", password)
+	uri = uri + part
 
 	var err error
 	client, err = mongo.NewClient(options.Client().ApplyURI(uri))
