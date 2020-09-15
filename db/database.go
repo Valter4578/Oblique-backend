@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -15,11 +14,8 @@ import (
 var client *mongo.Client
 
 // ConnectDB used to connect to MongoDB Atlas
-func ConnectDB(password string) {
+func ConnectDB(uri string) {
 	// because github actions cut string behind password from secrets
-	uri := "mongodb+srv://valter:"
-	part := fmt.Sprintf("%v@oblique.bifuo.mongodb.net/oblique?retryWrites=true&w=majority", password)
-	uri = uri + part
 
 	var err error
 	client, err = mongo.NewClient(options.Client().ApplyURI(uri))
