@@ -94,3 +94,19 @@ func UpdateWallet(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 
 	return result
 }
+
+func DeleteWallet(id primitive.ObjectID) error {
+	log.Println("Db: DeleteWallet")
+
+	collection := client.Database("oblique-dev").Collection("wallets")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := collection.DeleteOne(ctx, bson.M{"_id": id})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}

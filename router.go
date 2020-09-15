@@ -33,6 +33,7 @@ func route() {
 	// wallet
 	router.HandleFunc("/wallets", wallet.GetWallets)
 	router.HandleFunc("/wallet", wallet.AddWallet).Methods("POST")
+	router.HandleFunc("/wallet/{id}", wallet.DeleteWallet).Methods("DELETE")
 	router.HandleFunc("/wallet/{id}", wallet.GetWallet)
 
 	log.Fatal(http.ListenAndServe(getPort(), router))
