@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	uintptr := os.Getenv("URI")
+	uri := os.Getenv("URI")
 	db.ConnectDB(uri)
 
 	route()
