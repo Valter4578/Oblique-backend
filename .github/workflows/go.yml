@@ -35,5 +35,5 @@ jobs:
 
     - name: Test operation
       env: 
-        DBPASSWORD: ${{ secrets.DBPASSWORD }}
+        URI: ${{ secrets.URI }}
       run: go test ./operation
