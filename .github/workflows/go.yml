@@ -7,12 +7,12 @@ on:
     branches: [ master ]
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
+    env: 
+      URI: ${{ secrets.URI }}
     steps: 
-
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
@@ -34,6 +34,4 @@ jobs:
       run: go build -v .
 
     - name: Test operation
-      env: 
-        URI: ${{ secrets.URI }}
       run: go test ./operation
