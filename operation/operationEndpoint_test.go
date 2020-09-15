@@ -17,9 +17,9 @@ import (
 func TestAddOperation(t *testing.T) {
 	t.Log("TestAddOperation")
 
-	password := os.Getenv("DBPASSWORD")
-	fmt.Println(password)
-	db.ConnectDB(password)
+	uri := os.Getenv("URI")
+	fmt.Println(uri)
+	db.ConnectDB(uri)
 
 	jsonStr := []byte(`{"title": "test mongo insert operation to category 1001", "amount": 1001}`)
 
@@ -44,9 +44,9 @@ func TestAddOperation(t *testing.T) {
 func TestGetOperations(t *testing.T) {
 	t.Log("TestGetOperations")
 
-	password := os.Getenv("DBPASSWORD")
-	fmt.Println(password)
-	db.ConnectDB(password)
+	uri := os.Getenv("URI")
+	fmt.Println(uri)
+	db.ConnectDB(uri)
 
 	req, err := http.NewRequest("GET", "/operations", nil)
 	if err != nil {
@@ -66,9 +66,9 @@ func TestGetOperations(t *testing.T) {
 func TestDeleteOperation(t *testing.T) {
 	t.Log("TestDeleteOperation")
 
-	password := os.Getenv("DBPASSWORD")
-	fmt.Println(password)
-	db.ConnectDB(password)
+	uri := os.Getenv("URI")
+	fmt.Println(uri)
+	db.ConnectDB(uri)
 
 	req, err := http.NewRequest("DELETE", "/operation", nil)
 	if err != nil {
@@ -96,9 +96,9 @@ func TestDeleteOperation(t *testing.T) {
 
 func TestGetOperation(t *testing.T) {
 	t.Log("TestGetOperation")
-	password := os.Getenv("DBPASSWORD")
-	fmt.Println(password)
-	db.ConnectDB(password)
+	uri := os.Getenv("URI")
+	fmt.Println(uri)
+	db.ConnectDB(uri)
 
 	req, err := http.NewRequest("GET", `/operation/`, nil)
 	if err != nil {
