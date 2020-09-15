@@ -31,7 +31,9 @@ jobs:
         fi
 
     - name: Build
-      run: go build -v .
+      run: 
+        echo $URI
+        go build -v .
 
     - name: Test operation
       run: go test ./operation
