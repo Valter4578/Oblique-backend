@@ -1,17 +1,18 @@
-package category
+package endpoints
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"sort"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/gorilla/mux"
 
-	"oblique/db"
-	"oblique/logger"
-	"oblique/model"
+	"oblique/iternal/app/db"
+	"oblique/iternal/app/logger"
+	"oblique/iternal/app/model"
 )
 
 func GetAllCategories(w http.ResponseWriter, r *http.Request) {
@@ -73,8 +74,15 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetMostUsedCategories")
 
+	var mostUsedCategories []model.Category
+	db.GetCategories(&mostUsedCategories)
+
+	sort.SliceStable(mostUsedCategories, func(i, j int) bool {
+		return len(mostUsedCategories[i].Operations) > len(mostUsedCategories[j].Operations)
+	})
+
 	w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(MostUsedCategories())
+	json.NewEncoder(w).Encode(&mostUsedCategories)
 }
 
 // func GetCategoriesStatistic(w http.ResponseWriter, r *http.Request) {

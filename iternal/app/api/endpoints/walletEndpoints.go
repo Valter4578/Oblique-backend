@@ -1,13 +1,13 @@
-package wallet
+package endpoints
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
 
-	"oblique/db"
-	"oblique/logger"
-	"oblique/model"
+	"oblique/iternal/app/db"
+	"oblique/iternal/app/logger"
+	"oblique/iternal/app/model"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"

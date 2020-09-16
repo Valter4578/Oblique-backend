@@ -1,17 +1,17 @@
-package operation
+package endpoints
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"oblique/db"
-	"oblique/logger"
+
+	"oblique/iternal/app/db"
+	"oblique/iternal/app/logger"
+	"oblique/iternal/app/model"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/gorilla/mux"
-
-	"oblique/model"
 )
 
 // GetOperations is get method that returns all expenses

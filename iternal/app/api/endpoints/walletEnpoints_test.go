@@ -1,4 +1,4 @@
-package wallet
+package endpoints
 
 import (
 	"bytes"

@@ -1,13 +1,20 @@
 package main
 
 import (
-	"oblique/db"
+	"oblique/iternal/app/api"
+	"oblique/iternal/app/db"
+
 	"os"
 )
 
 func main() {
 	uri := os.Getenv("URI")
-	db.ConnectDB(uri)
+	db := db.Database{
+		URI:    uri,
+		DBName: "oblique-dev",
+	}
 
-	route()
+	db.Connect()
+
+	api.Route()
 }

@@ -3,8 +3,9 @@ package db
 import (
 	"context"
 	"log"
-	"oblique/model"
 	"time"
+
+	"oblique/iternal/app/model"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -25,6 +26,12 @@ func InsertCategory(category *model.Category) *mongo.InsertOneResult {
 	}
 
 	return result
+
+	// var ctgr model.Category
+	// _, err := db.insert(&ctgr, categories)
+	// if err != nil {
+
+	// }
 }
 
 func GetCategory(id primitive.ObjectID, category *model.Category) error {
