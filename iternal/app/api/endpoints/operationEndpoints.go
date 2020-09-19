@@ -20,11 +20,10 @@ func GetOperations(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	var operations []model.Operation
-	err := db.GetOperations(&operations)
+	operations, err := db.GetOperations()
 	if err != nil {
-		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
+		w.WriteHeader(500)
 		return
 	}
 
@@ -45,11 +44,10 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var operation model.Operation
-	err = db.GetOperation(id, &operation)
+	operation, err := db.GetOperation(id)
 	if err != nil {
-		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
+		w.WriteHeader(500)
 		return
 	}
 

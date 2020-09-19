@@ -20,12 +20,10 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	var categories []model.Category
-
-	err := db.GetCategories(&categories)
+	categories, err := db.GetCategories()
 	if err != nil {
-		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
+		w.WriteHeader(500)
 		return
 	}
 
@@ -45,11 +43,10 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var category model.Category
-	err = db.GetCategory(id, &category)
+	category, err := db.GetCategory(id)
 	if err != nil {
-		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
+		w.WriteHeader(500)
 		return
 	}
 
@@ -74,8 +71,14 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetMostUsedCategories")
 
-	var mostUsedCategories []model.Category
-	db.GetCategories(&mostUsedCategories)
+	categories, err := db.GetCategories()
+	if err != nil {
+		w.Write([]byte(logger.JSONError(err)))
+		w.WriteHeader(500)
+		return
+	}
+
+	mostUsedCategories := *categories
 
 	sort.SliceStable(mostUsedCategories, func(i, j int) bool {
 		return len(mostUsedCategories[i].Operations) > len(mostUsedCategories[j].Operations)

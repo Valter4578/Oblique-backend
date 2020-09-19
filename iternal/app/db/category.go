@@ -14,7 +14,7 @@ import (
 
 func InsertCategory(category *model.Category) *mongo.InsertOneResult {
 	log.Println("Database: InsertCategory")
-	collection := client.Database("oblique-dev").Collection("categories")
+	collection := DB.database().Collection(categories)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -26,68 +26,65 @@ func InsertCategory(category *model.Category) *mongo.InsertOneResult {
 	}
 
 	return result
-
-	// var ctgr model.Category
-	// _, err := db.insert(&ctgr, categories)
-	// if err != nil {
-
-	// }
 }
 
-func GetCategory(id primitive.ObjectID, category *model.Category) error {
+func GetCategory(id primitive.ObjectID) (*model.Category, error) {
 	log.Println("Database: GetCategory")
 
-	collection := client.Database("oblique-dev").Collection("categories")
+	collection := DB.database().Collection(categories)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
+	var category model.Category
 	err := collection.FindOne(ctx, model.Category{ID: id}).Decode(&category)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &category, nil
 }
 
-func GetCategories(categories *[]model.Category) error {
+func GetCategories() (*[]model.Category, error) {
 	log.Println("Database: GetCategories")
 
-	collection := client.Database("oblique-dev").Collection("categories")
+	collection := DB.database().Collection(categories)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 	defer cursor.Close(ctx)
 
+	var categories []model.Category
 	for cursor.Next(ctx) {
 		var category model.Category
-		err = cursor.Decode(&categories)
+		err = cursor.Decode(&category)
 		if err != nil {
+			log.Println(1)
 			log.Println(err)
-			return err
+			return nil, err
 		}
 
-		*categories = append(*categories, category)
+		categories = append(categories, category)
 	}
 
 	err = cursor.Err()
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &categories, nil
 }
 
 func UpdateCategory(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 	log.Println("Database: UpdateCategory")
 
-	collection := client.Database("oblique-dev").Collection("categories")
+	collection := DB.database().Collection(categories)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -101,7 +98,7 @@ func UpdateCategory(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 }
 
 func addOperation(categoryID primitive.ObjectID, operationID primitive.ObjectID) {
-	collection := client.Database("oblique-dev").Collection("categories")
+	collection := DB.database().Collection(categories)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

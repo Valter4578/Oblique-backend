@@ -17,11 +17,10 @@ func GetWallets(w http.ResponseWriter, r *http.Request) {
 	log.Println("GetWallets")
 	w.Header().Set("Content-Type", "application/json")
 
-	var wallets []model.Wallet
-	err := db.GetWallets(&wallets)
+	wallets, err := db.GetWallets()
 	if err != nil {
-		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
+		w.WriteHeader(500)
 		return
 	}
 
@@ -40,16 +39,14 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var wallet model.Wallet
-
-	err = db.GetWallet(id, &wallet)
+	wallet, err := db.GetWallet(id)
 	if err != nil {
 		log.Println(err)
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
 
-	json.NewEncoder(w).Encode(wallet)
+	json.NewEncoder(w).Encode(&wallet)
 }
 
 func AddWallet(w http.ResponseWriter, r *http.Request) {

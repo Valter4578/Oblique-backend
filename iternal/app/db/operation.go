@@ -16,7 +16,7 @@ import (
 
 func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 	log.Println("Database: InsertOperation")
-	collection := client.Database("oblique-dev").Collection("operations")
+	collection := DB.database().Collection(operations)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -32,8 +32,7 @@ func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 
 func InsertOperationToCategory(operation *model.Operation, categoryID primitive.ObjectID) error {
 	log.Println("Database: InsertOperationToCategory")
-
-	collection := client.Database("oblique-dev").Collection("operation")
+	collection := DB.database().Collection(operations)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -60,60 +59,62 @@ func InsertOperationToCategory(operation *model.Operation, categoryID primitive.
 	return nil
 }
 
-func GetOperation(id primitive.ObjectID, operation *model.Operation) error {
+func GetOperation(id primitive.ObjectID) (*model.Operation, error) {
 	log.Println("Database: GetOperation")
 
-	collection := client.Database("oblique-dev").Collection("operations")
+	collection := DB.database().Collection(operations)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
+	var operation model.Operation
 	err := collection.FindOne(ctx, model.Operation{ID: id}).Decode(&operation)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &operation, nil
 }
 
-func GetOperations(operations *[]model.Operation) error {
+func GetOperations() (*[]model.Operation, error) {
 	log.Println("Database: GetOperations")
 
-	collection := client.Database("oblique-dev").Collection("operations")
+	collection := DB.database().Collection(operations)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 	defer cursor.Close(ctx)
 
+	var operations []model.Operation
 	for cursor.Next(ctx) {
 		var operation model.Operation
 		err = cursor.Decode(&operation)
 		if err != nil {
 			log.Println(err)
-			return err
+			return nil, err
 		}
 
-		*operations = append(*operations, operation)
+		operations = append(operations, operation)
 	}
 
 	err = cursor.Err()
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &operations, nil
 }
 
 func UpdateOperation(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 	log.Println("Database: UpdateOperation")
 
-	collection := client.Database("oblique-dev").Collection("operations")
+	collection := DB.database().Collection(operations)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -129,7 +130,7 @@ func UpdateOperation(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 func DeleteOperation(id primitive.ObjectID) error {
 	log.Println("Database: DeleteOperation")
 
-	collection := client.Database("oblique-dev").Collection("operations")
+	collection := DB.database().Collection(operations)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
