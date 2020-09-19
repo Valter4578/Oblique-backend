@@ -9,7 +9,7 @@ import (
 
 func main() {
 	uri := os.Getenv("URI")
-	db := db.Database{
+	db := &db.Database{
 		URI:    uri,
 		DBName: "oblique-dev",
 	}
