@@ -17,3 +17,9 @@ type Claims struct {
 	Email string
 	jwt.StandardClaims
 }
+
+type response struct {
+	Token   string `json:"token,omitempty"`
+	Email   string `json:"email,omitempty"`
+	Message string `json:"message,omitempty"`
+}

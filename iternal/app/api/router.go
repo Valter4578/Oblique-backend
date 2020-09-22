@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"oblique/iternal/app/api/auth"
 	"oblique/iternal/app/api/endpoints"
 
 	"github.com/gorilla/mux"
@@ -14,6 +15,11 @@ import (
 func Route() {
 	log.Println("Starting routing")
 	router := mux.NewRouter().StrictSlash(true)
+
+	// auth
+	router.HandleFunc("/signin", auth.SignIn).Methods("POST")
+	router.HandleFunc("/signup", auth.SignUp).Methods("POST")
+	router.HandleFunc("/userDetails", auth.GetUserDetails)
 
 	// operations
 	router.HandleFunc("/operations", endpoints.GetOperations)
