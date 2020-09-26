@@ -17,12 +17,15 @@ import (
 const (
 	missingEmail    = "Email is empty"
 	missingPassword = "Password is empty"
+	missingName     = "Name is empty"
 
 	cantGetDataFromDb = "Couldn't get data from database"
 	cantCreateUserDB  = "Couldn't create user in database"
 
 	cantCreateJWT   = "Couldn't create JWT token"
 	cantVerifyToken = "Couldn't verify token"
+
+	cantCreateHash = "Couldn't create hash password"
 )
 
 func SignIn(w http.ResponseWriter, r *http.Request) {
@@ -98,51 +101,42 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if params.Email == "" {
-		err = errors.New(missingEmail)
-		msg := logger.JSONError(err)
-		io.WriteString(w, msg)
-		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, missingEmail, http.StatusBadRequest)
 		return
 	}
 
 	if params.Password == "" {
-		err = errors.New(missingPassword)
-		msg := logger.JSONError(err)
-		io.WriteString(w, msg)
-		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, missingPassword, http.StatusBadRequest)
 		return
 	}
 
 	if params.Name == "" {
-		err = errors.New(missingPassword)
-		msg := logger.JSONError(err)
-		io.WriteString(w, msg)
-		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, missingName, http.StatusBadRequest)
 		return
 	}
 
 	tokenString, err := CreateJWT(params.Email)
 	if err != nil {
 		log.Println(err)
-		err = errors.New(cantCreateJWT)
-		msg := logger.JSONError(err)
-		io.WriteString(w, msg)
-		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, cantCreateJWT, http.StatusInternalServerError)
+		return
+	}
+
+	passwordHash, err := HashPassword(params.Password)
+	if err != nil {
+		WriteError(w, cantCreateHash, http.StatusInternalServerError)
 		return
 	}
 
 	user := &model.User{
 		Email:    params.Email,
-		Password: params.Password,
+		Password: passwordHash,
 		Name:     params.Name,
 	}
 
 	err = db.CreateUser(user)
 	if err != nil {
-		err = errors.New(cantCreateUserDB)
-		msg := logger.JSONError(err)
-		io.WriteString(w, msg)
-		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, cantCreateUserDB, http.StatusInternalServerError)
 		return
 	}
 
@@ -155,7 +149,6 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(rspns)
-
 }
 
 func GetUserDetails(w http.ResponseWriter, r *http.Request) {
@@ -166,24 +159,17 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 
 	email, err := VerifyToken(authToken)
 	if err != nil {
-		err = errors.New(cantVerifyToken)
-		msg := logger.JSONError(err)
-		io.WriteString(w, msg)
-		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, cantVerifyToken, http.StatusInternalServerError)
 		return
 	}
 
 	user, err := db.GetUserDetails(email)
 	if err != nil {
-		err = errors.New(cantGetDataFromDb)
-		msg := logger.JSONError(err)
-		io.WriteString(w, msg)
-		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, cantVerifyToken, http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(&user)
-
 }
