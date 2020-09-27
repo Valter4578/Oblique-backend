@@ -14,7 +14,6 @@ import (
 )
 
 func GetWallets(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetWallets")
 	w.Header().Set("Content-Type", "application/json")
 
 	wallets, err := db.GetWallets()
@@ -28,7 +27,6 @@ func GetWallets(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWallet(w http.ResponseWriter, r *http.Request) {
-	log.Println("getWallet")
 	w.Header().Set("Content-Type", "application/json")
 
 	params := mux.Vars(r)
@@ -50,7 +48,6 @@ func GetWallet(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddWallet(w http.ResponseWriter, r *http.Request) {
-	log.Println("AddWallet")
 	w.Header().Set("Content-Type", "application/json")
 
 	var wallet model.Wallet
@@ -67,8 +64,6 @@ func AddWallet(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteWallet(w http.ResponseWriter, r *http.Request) {
-	log.Println("DeleteWallet")
-
 	w.Header().Set("Content-Type", "application/json")
 
 	params := mux.Vars(r)

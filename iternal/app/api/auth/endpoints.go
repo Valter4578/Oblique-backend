@@ -29,8 +29,6 @@ const (
 )
 
 func SignIn(w http.ResponseWriter, r *http.Request) {
-	log.Println("Auth: SignIn")
-
 	var params LoginParams
 
 	err := json.NewDecoder(r.Body).Decode(&params)
@@ -88,7 +86,6 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func SignUp(w http.ResponseWriter, r *http.Request) {
-	log.Println("Auth: SignUp")
 	var params RegistationParams
 
 	err := json.NewDecoder(r.Body).Decode(&params)
@@ -152,8 +149,6 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserDetails(w http.ResponseWriter, r *http.Request) {
-	log.Println("Auth: User Details")
-
 	bearerToken := r.Header.Get("Authorization")
 	authToken := strings.Split(bearerToken, " ")[0]
 

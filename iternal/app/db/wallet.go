@@ -14,7 +14,6 @@ import (
 
 // InsertWallet gets wallet pointer and returns pointer to mongo.InsertOneResult
 func InsertWallet(wallet *model.Wallet) *mongo.InsertOneResult {
-	log.Println("Database: InsertWallet")
 	collection := DB.database().Collection(wallets)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -31,8 +30,6 @@ func InsertWallet(wallet *model.Wallet) *mongo.InsertOneResult {
 
 // GetWallet gets id of wallet and pointer to wallet for decode result into it
 func GetWallet(id primitive.ObjectID) (*model.Wallet, error) {
-	log.Println("Database: GetWallet")
-
 	collection := DB.database().Collection(wallets)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -48,8 +45,6 @@ func GetWallet(id primitive.ObjectID) (*model.Wallet, error) {
 }
 
 func GetWallets() (*[]model.Wallet, error) {
-	log.Println("Database: GetWallets")
-
 	collection := DB.database().Collection(wallets)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -83,8 +78,6 @@ func GetWallets() (*[]model.Wallet, error) {
 }
 
 func UpdateWallet(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
-	log.Println("Database: UpdateWallet")
-
 	collection := DB.database().Collection(wallets)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -99,8 +92,6 @@ func UpdateWallet(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 }
 
 func DeleteWallet(id primitive.ObjectID) error {
-	log.Println("Db: DeleteWallet")
-
 	collection := DB.database().Collection(wallets)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -112,4 +103,25 @@ func DeleteWallet(id primitive.ObjectID) error {
 	}
 
 	return nil
+}
+
+func addCategory(walletID primitive.ObjectID, categoryID primitive.ObjectID) {
+	collection := DB.database().Collection(categories)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": walletID}
+	update := bson.D{
+		{"$push", bson.D{
+			{"categories", categoryID},
+		}},
+	}
+
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	return
 }

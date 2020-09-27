@@ -17,28 +17,28 @@ func Route() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	// auth
-	router.HandleFunc("/signin", auth.SignIn).Methods("POST")
-	router.HandleFunc("/signup", auth.SignUp).Methods("POST")
-	router.HandleFunc("/userDetails", auth.GetUserDetails)
+	router.HandleFunc("/signin", Chain(auth.SignIn, Method("POST"), Logging())).Methods("POST")
+	router.HandleFunc("/signup", Chain(auth.SignUp, Method("POST"), Logging())).Methods("POST")
+	router.HandleFunc("/userDetails", Chain(auth.GetUserDetails, Method("GET"), Logging()))
 
 	// operations
-	router.HandleFunc("/operations", endpoints.GetOperations)
-	router.HandleFunc("/operation/{id}", endpoints.DeleteOperation).Methods("DELETE")
-	router.HandleFunc("/operation/{id}", endpoints.GetOperation)
-	router.HandleFunc("/operation", endpoints.AddOperation).Methods("POST")
+	router.HandleFunc("/operations", Chain(endpoints.GetOperations, Method("GET"), Logging()))
+	router.HandleFunc("/operation/{id}", Chain(endpoints.DeleteOperation, Method("DELETE"), Logging())).Methods("DELETE")
+	router.HandleFunc("/operation/{id}", Chain(endpoints.GetOperation, Method("GET"), Logging()))
+	router.HandleFunc("/operation", Chain(endpoints.AddOperation, Method("POST"), Logging())).Methods("POST")
 
 	// category
-	router.HandleFunc("/categories", endpoints.GetAllCategories)
-	router.HandleFunc("/category/{id}", endpoints.GetCategory)
-	router.HandleFunc("/category", endpoints.AddCategory).Methods("POST")
-	router.HandleFunc("/mostUsedCategories", endpoints.GetMostUsedCategories)
+	router.HandleFunc("/categories", Chain(endpoints.GetAllCategories, Method("GET"), Logging()))
+	router.HandleFunc("/category/{id}", Chain(endpoints.GetCategory, Method("GET"), Logging()))
+	router.HandleFunc("/category", Chain(endpoints.AddCategory, Method("POST"), Logging())).Methods("POST")
+	router.HandleFunc("/mostUsedCategories", Chain(endpoints.GetMostUsedCategories, Method("GET"), Logging()))
 	// router.HandleFunc("/statistic", category.GetCategoriesStatistic)
 
 	// wallet
-	router.HandleFunc("/wallets", endpoints.GetWallets)
-	router.HandleFunc("/wallet", endpoints.AddWallet).Methods("POST")
-	router.HandleFunc("/wallet/{id}", endpoints.DeleteWallet).Methods("DELETE")
-	router.HandleFunc("/wallet/{id}", endpoints.GetWallet)
+	router.HandleFunc("/wallets", Chain(endpoints.GetWallets, Method("GET"), Logging()))
+	router.HandleFunc("/wallet", Chain(endpoints.AddWallet, Method("POST"), Logging())).Methods("POST")
+	router.HandleFunc("/wallet/{id}", Chain(endpoints.DeleteWallet, Method("DELETE"), Logging())).Methods("DELETE")
+	router.HandleFunc("/wallet/{id}", Chain(endpoints.GetWallet, Method("GET"), Logging()))
 
 	log.Fatal(http.ListenAndServe(getPort(), router))
 }

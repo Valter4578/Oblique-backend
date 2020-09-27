@@ -15,7 +15,6 @@ import (
 )
 
 func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
-	log.Println("Database: InsertOperation")
 	collection := DB.database().Collection(operations)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -31,7 +30,6 @@ func InsertOperation(operation *model.Operation) *mongo.InsertOneResult {
 }
 
 func InsertOperationToCategory(operation *model.Operation, categoryID primitive.ObjectID) error {
-	log.Println("Database: InsertOperationToCategory")
 	collection := DB.database().Collection(operations)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -60,8 +58,6 @@ func InsertOperationToCategory(operation *model.Operation, categoryID primitive.
 }
 
 func GetOperation(id primitive.ObjectID) (*model.Operation, error) {
-	log.Println("Database: GetOperation")
-
 	collection := DB.database().Collection(operations)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -77,8 +73,6 @@ func GetOperation(id primitive.ObjectID) (*model.Operation, error) {
 }
 
 func GetOperations() (*[]model.Operation, error) {
-	log.Println("Database: GetOperations")
-
 	collection := DB.database().Collection(operations)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -112,8 +106,6 @@ func GetOperations() (*[]model.Operation, error) {
 }
 
 func UpdateOperation(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
-	log.Println("Database: UpdateOperation")
-
 	collection := DB.database().Collection(operations)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -128,8 +120,6 @@ func UpdateOperation(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
 }
 
 func DeleteOperation(id primitive.ObjectID) error {
-	log.Println("Database: DeleteOperation")
-
 	collection := DB.database().Collection(operations)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

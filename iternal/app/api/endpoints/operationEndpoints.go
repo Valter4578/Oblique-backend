@@ -16,8 +16,6 @@ import (
 
 // GetOperations is get method that returns all expenses
 func GetOperations(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetExpenses")
-
 	w.Header().Set("Content-Type", "application/json")
 
 	operations, err := db.GetOperations()
@@ -32,8 +30,6 @@ func GetOperations(w http.ResponseWriter, r *http.Request) {
 
 // GetOperation is get method that returns expense by id
 func GetOperation(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetOperation")
-
 	w.Header().Set("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
@@ -56,8 +52,6 @@ func GetOperation(w http.ResponseWriter, r *http.Request) {
 
 // AddOperation is post method for add new user's expense
 func AddOperation(w http.ResponseWriter, r *http.Request) {
-	log.Println("AddOperation")
-
 	var operation model.Operation
 	err := json.NewDecoder(r.Body).Decode(&operation)
 	if err != nil {
@@ -97,7 +91,6 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 
 // DeleteOperation is DELETE method that deletes expense by id
 func DeleteOperation(w http.ResponseWriter, r *http.Request) {
-	log.Println("DeleteOperation")
 	w.Header().Set("Content-Type", "application/json")
 
 	params := mux.Vars(r)

@@ -2,7 +2,9 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"oblique/iternal/app/model"
@@ -13,7 +15,6 @@ import (
 )
 
 func InsertCategory(category *model.Category) *mongo.InsertOneResult {
-	log.Println("Database: InsertCategory")
 	collection := DB.database().Collection(categories)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -28,9 +29,36 @@ func InsertCategory(category *model.Category) *mongo.InsertOneResult {
 	return result
 }
 
-func GetCategory(id primitive.ObjectID) (*model.Category, error) {
-	log.Println("Database: GetCategory")
+func InsertCategoryToWallet(category *model.Category, walletID primitive.ObjectID) error {
+	collection := DB.database().Collection(categories)
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := collection.InsertOne(ctx, category)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	stringID := fmt.Sprintf("%v", result.InsertedID)
+	i := strings.IndexByte(stringID, '"')
+	if i != -1 {
+		stringID = stringID[i+1 : len(stringID)-2]
+	}
+
+	id, err := primitive.ObjectIDFromHex(stringID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	// addOperation(categoryID, id)
+	addCategory(walletID, id)
+	return nil
+}
+
+func GetCategory(id primitive.ObjectID) (*model.Category, error) {
 	collection := DB.database().Collection(categories)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -46,8 +74,6 @@ func GetCategory(id primitive.ObjectID) (*model.Category, error) {
 }
 
 func GetCategories() (*[]model.Category, error) {
-	log.Println("Database: GetCategories")
-
 	collection := DB.database().Collection(categories)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -82,8 +108,6 @@ func GetCategories() (*[]model.Category, error) {
 }
 
 func UpdateCategory(id primitive.ObjectID, update bson.D) *mongo.UpdateResult {
-	log.Println("Database: UpdateCategory")
-
 	collection := DB.database().Collection(categories)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

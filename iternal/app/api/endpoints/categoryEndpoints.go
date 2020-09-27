@@ -16,8 +16,6 @@ import (
 )
 
 func GetAllCategories(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetAllCategories")
-
 	w.Header().Set("Content-Type", "application/json")
 
 	categories, err := db.GetCategories()
@@ -31,8 +29,6 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCategory(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetCategory")
-
 	w.Header().Set("Content-Type", "application/json")
 
 	params := mux.Vars(r)
@@ -54,8 +50,6 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddCategory(w http.ResponseWriter, r *http.Request) {
-	log.Println("AddCategory")
-
 	var category model.Category
 	err := json.NewDecoder(r.Body).Decode(&category)
 	if err != nil {
@@ -64,13 +58,40 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := db.InsertCategory(&category)
-	json.NewEncoder(w).Encode(result)
+	// result := db.InsertCategory(&category)
+	// json.NewEncoder(w).Encode(result)
+
+	params := r.URL.Query()
+	id := params.Get("walletId")
+	if id != "" {
+		objId, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			log.Println(err)
+			w.Write([]byte(logger.JSONError(err)))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		err = db.InsertCategoryToWallet(&category, objId)
+		if err != nil {
+			log.Println(err)
+			w.Write([]byte(logger.JSONError(err)))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		msg := logger.JSONMessage("The category was successfully added to the wallet")
+		w.Write([]byte(msg))
+
+		w.WriteHeader(http.StatusCreated)
+	} else {
+		result := db.InsertCategory(&category)
+		w.WriteHeader(http.StatusCreated)
+
+		json.NewEncoder(w).Encode(result)
+	}
 }
 
 func GetMostUsedCategories(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetMostUsedCategories")
-
 	categories, err := db.GetCategories()
 	if err != nil {
 		w.Write([]byte(logger.JSONError(err)))
