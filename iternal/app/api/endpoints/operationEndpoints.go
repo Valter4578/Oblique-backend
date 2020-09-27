@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"oblique/iternal/app/db"
 	"oblique/iternal/app/logger"
@@ -59,6 +60,8 @@ func AddOperation(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(logger.JSONError(err)))
 		return
 	}
+
+	operation.Time = time.Now()
 
 	params := r.URL.Query()
 	id := params.Get("categoryId")

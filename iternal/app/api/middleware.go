@@ -1,11 +1,18 @@
 package api
 
 import (
+	"errors"
+	"io"
 	"log"
 	"net/http"
+	"strings"
 	"time"
+
+	"oblique/iternal/app/api/auth"
+	"oblique/iternal/app/logger"
 )
 
+// Middleware ...
 type Middleware func(http.HandlerFunc) http.HandlerFunc
 
 // Logging logs all requests with its path and the time it took to process
@@ -35,6 +42,26 @@ func Method(m string) Middleware {
 			}
 
 			// call the next handler or middleware in chain
+			f(w, r)
+		}
+	}
+}
+
+func Token() Middleware {
+	return func(f http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			bearerToken := r.Header.Get("Authorization")
+			authToken := strings.Split(bearerToken, " ")[0]
+
+			_, err := auth.VerifyToken(authToken)
+			if err != nil {
+				log.Println(err)
+				err = errors.New("Can't verify jwt token")
+				msg := logger.JSONError(err)
+				io.WriteString(w, msg)
+				return
+			}
+
 			f(w, r)
 		}
 	}

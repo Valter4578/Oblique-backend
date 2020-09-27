@@ -58,9 +58,6 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// result := db.InsertCategory(&category)
-	// json.NewEncoder(w).Encode(result)
-
 	params := r.URL.Query()
 	id := params.Get("walletId")
 	if id != "" {
