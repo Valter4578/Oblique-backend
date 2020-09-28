@@ -47,6 +47,7 @@ func Method(m string) Middleware {
 	}
 }
 
+// Token middleware checks jwt token for endpoints
 func Token() Middleware {
 	return func(f http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
