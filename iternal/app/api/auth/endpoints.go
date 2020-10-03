@@ -10,7 +10,6 @@ import (
 	"oblique/iternal/app/db"
 	"oblique/iternal/app/model"
 	"strings"
-	"time"
 
 	"oblique/iternal/app/logger"
 )
@@ -28,9 +27,12 @@ const (
 	cantVerifyToken = "Couldn't verify token"
 
 	cantCreateHash = "Couldn't create hash password"
+
+	incorrectPass = "Password is incorrect"
 )
 
 func SignIn(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Sign in")
 	var params LoginParams
 
 	err := json.NewDecoder(r.Body).Decode(&params)
@@ -42,52 +44,26 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	start := time.Now()
-	valid := make(chan bool)
-	go func() {
-		valid <- false
-		if params.Email == "" {
-			err = errors.New(missingEmail)
-			msg := logger.JSONError(err)
-			io.WriteString(w, msg)
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		if params.Password == "" {
-			err = errors.New(missingPassword)
-			msg := logger.JSONError(err)
-			io.WriteString(w, msg)
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		valid <- true
-	}()
-	fmt.Println("validating", time.Since(start))
-
-	isValid := <-valid
-	if isValid != true {
+	if params.Email == "" {
+		WriteError(w, missingEmail, http.StatusBadRequest)
 		return
 	}
 
-	usr := make(chan model.User)
-	start = time.Now()
-	go func() {
-		user, err := db.GetUser(params.Email, params.Password)
-		if err != nil {
-			err = errors.New(cantGetDataFromDb)
-			msg := logger.JSONError(err)
-			io.WriteString(w, msg)
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+	user, err := db.GetUserDetails(params.Email)
+	if err != nil {
+		err = errors.New(cantGetDataFromDb)
+		msg := logger.JSONError(err)
+		io.WriteString(w, msg)
+		w.WriteHeader(http.StatusBadRequest)
 
-		usr <- *user
-	}()
+		return
+	}
 
-	user := <-usr
-	fmt.Println("db", time.Since(start))
+	valid := CheckPasswordHash(params.Password, user.Password)
+	if valid == false {
+		WriteError(w, incorrectPass, http.StatusInternalServerError)
+		return
+	}
 
 	tokenString, err := CreateJWT(params.Email)
 	if err != nil {
@@ -121,29 +97,34 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	valid := make(chan bool)
-	go func() {
-		valid <- false
-
-		if params.Email == "" {
-			WriteError(w, missingEmail, http.StatusBadRequest)
-			return
-		}
-
-		if params.Password == "" {
-			WriteError(w, missingPassword, http.StatusBadRequest)
-			return
-		}
-
-		if params.Name == "" {
-			WriteError(w, missingName, http.StatusBadRequest)
-			return
-		}
-		valid <- true
-	}()
-	if <-valid != true {
+	if params.Email == "" {
+		log.Println(2)
+		WriteError(w, missingEmail, http.StatusBadRequest)
 		return
 	}
+
+	if params.Password == "" {
+		log.Println(3)
+		WriteError(w, missingPassword, http.StatusBadRequest)
+		return
+	}
+
+	if params.Name == "" {
+		log.Println(4)
+		WriteError(w, missingName, http.StatusBadRequest)
+		return
+	}
+
+	token := make(chan string)
+	go func() {
+		tokenString, err := CreateJWT(params.Email)
+		if err != nil {
+			log.Println(err)
+			WriteError(w, cantCreateJWT, http.StatusInternalServerError)
+			return
+		}
+		token <- tokenString
+	}()
 
 	hash := make(chan string)
 	go func() {
@@ -171,17 +152,6 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, cantCreateUserDB, http.StatusInternalServerError)
 		return
 	}
-
-	token := make(chan string)
-	go func() {
-		tokenString, err := CreateJWT(params.Email)
-		if err != nil {
-			log.Println(err)
-			WriteError(w, cantCreateJWT, http.StatusInternalServerError)
-			return
-		}
-		token <- tokenString
-	}()
 
 	rspns := &response{
 		Token:   <-token,

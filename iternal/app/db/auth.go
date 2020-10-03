@@ -19,8 +19,7 @@ func GetUser(email string, password string) (*model.User, error) {
 
 	var user model.User
 	err := collection.FindOne(ctx, model.User{
-		Email:    email,
-		Password: password,
+		Email: email,
 	}).Decode(&user)
 	if err != nil {
 		log.Println(err)
