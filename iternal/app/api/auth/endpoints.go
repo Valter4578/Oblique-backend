@@ -49,6 +49,11 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if params.Password == "" {
+		WriteError(w, missingPassword, http.StatusBadRequest)
+		return
+	}
+
 	user, err := db.GetUserDetails(params.Email)
 	if err != nil {
 		err = errors.New(cantGetDataFromDb)
