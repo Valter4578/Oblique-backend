@@ -35,14 +35,13 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Sign in")
 	var params LoginParams
 
-	err := json.NewDecoder(r.Body).Decode(&params)
+	err := r.ParseForm()
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		msg := logger.JSONError(err)
-		io.WriteString(w, msg)
-		return
+		log.Println("Parse form error: ", err)
 	}
+
+	params.Email = r.FormValue("email")
+	params.Password = r.FormValue("password")
 
 	if params.Email == "" {
 		WriteError(w, missingEmail, http.StatusBadRequest)
@@ -93,14 +92,22 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 func SignUp(w http.ResponseWriter, r *http.Request) {
 	var params RegistationParams
 
-	err := json.NewDecoder(r.Body).Decode(&params)
+	// err := json.NewDecoder(r.Body).Decode(&params)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	w.WriteHeader(http.StatusInternalServerError)
+	// 	msg := logger.JSONError(err)
+	// 	io.WriteString(w, msg)
+	// 	return
+	// }
+	err := r.ParseForm()
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		msg := logger.JSONError(err)
-		io.WriteString(w, msg)
-		return
+		log.Println("Parse form error: ", err)
 	}
+
+	params.Email = r.FormValue("email")
+	params.Password = r.FormValue("password")
+	params.Name = r.FormValue("name")
 
 	if params.Email == "" {
 		log.Println(2)
@@ -111,7 +118,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	if params.Password == "" {
 		log.Println(3)
 		WriteError(w, missingPassword, http.StatusBadRequest)
-		return
+		return	
 	}
 
 	if params.Name == "" {

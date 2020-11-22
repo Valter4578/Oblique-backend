@@ -12,6 +12,8 @@ import (
 	"oblique/iternal/app/logger"
 )
 
+var Api *API
+
 // Middleware ...
 type Middleware func(http.HandlerFunc) http.HandlerFunc
 
@@ -51,20 +53,25 @@ func Method(m string) Middleware {
 func Token() Middleware {
 	return func(f http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
-			bearerToken := r.Header.Get("Authorization")
-			authToken := strings.Split(bearerToken, " ")[0]
+			if !Api.IsDebugMode {
+				bearerToken := r.Header.Get("Authorization")
+				authToken := strings.Split(bearerToken, " ")[0]
 
-			_, err := auth.VerifyToken(authToken)
-			if err != nil {
-				log.Println(err)
-				err = errors.New("Can't verify jwt token")
-				msg := logger.JSONError(err)
-				io.WriteString(w, msg)
-				return
+				_, err := auth.VerifyToken(authToken)
+				if err != nil {
+					log.Println(err)
+					err = errors.New("Can't verify jwt token")
+					msg := logger.JSONError(err)
+					io.WriteString(w, msg)
+					return
+				}
+
+				f(w, r)
+			} else {
+				f(w, r)
 			}
-
-			f(w, r)
 		}
+
 	}
 }
 

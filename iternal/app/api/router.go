@@ -13,35 +13,36 @@ import (
 )
 
 // Route create endpoints routes
-func Route() {
+func (api *API) Route() {
 	log.Println("Starting routing")
-	router := mux.NewRouter().StrictSlash(true)
-
+	api.Router = mux.NewRouter().StrictSlash(true)
+	Api = api
+	
 	// auth
-	router.HandleFunc("/signin", Chain(auth.SignIn, Method("POST"), Logging())).Methods("POST")
-	router.HandleFunc("/signup", Chain(auth.SignUp, Method("POST"), Logging())).Methods("POST")
-	router.HandleFunc("/userDetails", Chain(auth.GetUserDetails, Method("GET"), Logging()))
+	api.Router.HandleFunc("/signin", Chain(auth.SignIn, Method("POST"), Logging())).Methods("POST")
+	api.Router.HandleFunc("/signup", Chain(auth.SignUp, Method("POST"), Logging())).Methods("POST")
+	api.Router.HandleFunc("/userDetails", Chain(auth.GetUserDetails, Method("GET"), Logging()))
 
 	// operations
-	router.HandleFunc("/operations", Chain(endpoints.GetOperations, Method("GET"), Logging(), Token()))
-	router.HandleFunc("/operation/{id}", Chain(endpoints.DeleteOperation, Method("DELETE"), Logging(), Token())).Methods("DELETE")
-	router.HandleFunc("/operation/{id}", Chain(endpoints.GetOperation, Method("GET"), Logging(), Token()))
-	router.HandleFunc("/operation", Chain(endpoints.AddOperation, Method("POST"), Logging(), Token())).Methods("POST")
+	api.Router.HandleFunc("/operations", Chain(endpoints.GetOperations, Method("GET"), Logging(), Token()))
+	api.Router.HandleFunc("/operation/{id}", Chain(endpoints.DeleteOperation, Method("DELETE"), Logging(), Token())).Methods("DELETE")
+	api.Router.HandleFunc("/operation/{id}", Chain(endpoints.GetOperation, Method("GET"), Logging(), Token()))
+	api.Router.HandleFunc("/operation", Chain(endpoints.AddOperation, Method("POST"), Logging(), Token())).Methods("POST")
 
 	// category
-	router.HandleFunc("/categories", Chain(endpoints.GetAllCategories, Method("GET"), Logging(), Token()))
-	router.HandleFunc("/category/{id}", Chain(endpoints.GetCategory, Method("GET"), Logging(), Token()))
-	router.HandleFunc("/category", Chain(endpoints.AddCategory, Method("POST"), Logging(), Token())).Methods("POST")
-	router.HandleFunc("/mostUsedCategories", Chain(endpoints.GetMostUsedCategories, Method("GET"), Logging(), Token()))
+	api.Router.HandleFunc("/categories", Chain(endpoints.GetAllCategories, Method("GET"), Logging(), Token()))
+	api.Router.HandleFunc("/category/{id}", Chain(endpoints.GetCategory, Method("GET"), Logging(), Token()))
+	api.Router.HandleFunc("/category", Chain(endpoints.AddCategory, Method("POST"), Logging(), Token())).Methods("POST")
+	api.Router.HandleFunc("/mostUsedCategories", Chain(endpoints.GetMostUsedCategories, Method("GET"), Logging(), Token()))
 	// router.HandleFunc("/statistic", category.GetCategoriesStatistic)
 
 	// wallet
-	router.HandleFunc("/wallets", Chain(endpoints.GetWallets, Method("GET"), Logging(), Token()))
-	router.HandleFunc("/wallet", Chain(endpoints.AddWallet, Method("POST"), Logging(), Token())).Methods("POST")
-	router.HandleFunc("/wallet/{id}", Chain(endpoints.DeleteWallet, Method("DELETE"), Logging(), Token())).Methods("DELETE")
-	router.HandleFunc("/wallet/{id}", Chain(endpoints.GetWallet, Method("GET"), Logging(), Token()))
+	api.Router.HandleFunc("/wallets", Chain(endpoints.GetWallets, Method("GET"), Logging(), Token()))
+	api.Router.HandleFunc("/wallet", Chain(endpoints.AddWallet, Method("POST"), Logging(), Token())).Methods("POST")
+	api.Router.HandleFunc("/wallet/{id}", Chain(endpoints.DeleteWallet, Method("DELETE"), Logging(), Token())).Methods("DELETE")
+	api.Router.HandleFunc("/wallet/{id}", Chain(endpoints.GetWallet, Method("GET"), Logging(), Token()))
 
-	log.Fatal(http.ListenAndServe(getPort(), router))
+	log.Fatal(http.ListenAndServe(getPort(), api.Router))
 }
 
 func getPort() string {

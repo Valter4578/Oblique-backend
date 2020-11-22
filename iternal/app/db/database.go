@@ -23,6 +23,7 @@ const (
 	wallets    = "wallets"
 	operations = "operations"
 	users      = "users"
+	budget     = "budget"
 )
 
 func (d *Database) Connect() {
